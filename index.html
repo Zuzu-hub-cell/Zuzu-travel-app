@@ -8,9 +8,7 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- 使用穩定版的 Lucide 圖標庫 -->
-    <script src="https://unpkg.com/lucide@0.344.0"></script>
-    <!-- Firebase SDK (兼容版本) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -18,9 +16,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;700;900&display=swap');
         body { font-family: 'Noto Sans HK', sans-serif; background-color: #FFF5F7; -webkit-tap-highlight-color: transparent; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .animate-in { animation: fadeIn 0.2s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .card-shadow { box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.05); }
+        .animate-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .pink-gradient { background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%); }
     </style>
 </head>
 <body>
@@ -29,9 +27,9 @@
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
 
-        // Firebase 配置 (使用你的 zuzu-travel-564a8 專案)
+        // Firebase 配置 (已填入你的 zuzu-travel-564a8)
         const firebaseConfig = {
-            apiKey: "AIzaSyCZSj0CQc_V7LuqUurXOJndNGZwdSK8OlI",
+            apiKey: "AIzaSyCZSj0CQc_V7LuqUurXOJndNGZwdSK80lI",
             authDomain: "zuzu-travel-564a8.firebaseapp.com",
             projectId: "zuzu-travel-564a8",
             storageBucket: "zuzu-travel-564a8.firebasestorage.app",
@@ -40,34 +38,32 @@
             measurementId: "G-SHQPN4W8V7"
         };
 
-        // 初始化 Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // 圖標組件 - 增加安全性檢查
-        const Icon = ({ name, size = 24, strokeWidth = 2, className = "", fill = "none" }) => {
-            const [iconHtml, setIconHtml] = useState('');
-            
-            useEffect(() => {
-                const renderIcon = () => {
-                    if (window.lucide && window.lucide.icons && window.lucide.icons[name]) {
-                        const icon = window.lucide.icons[name];
-                        if (typeof icon.toSvg === 'function') {
-                            setIconHtml(icon.toSvg({ size, 'stroke-width': strokeWidth, class: className, fill }));
-                        }
-                    }
-                };
-                renderIcon();
-                if (!window.lucide) {
-                    const timer = setTimeout(renderIcon, 200);
-                    return () => clearTimeout(timer);
-                }
-            }, [name, size, strokeWidth, className, fill]);
-
-            return <span dangerouslySetInnerHTML={{ __html: iconHtml }} className="flex items-center justify-center shrink-0" />;
+        // 內嵌 SVG Icon (保證 Vercel 100% 顯示)
+        const SVGIcon = ({ name, className = "w-6 h-6" }) => {
+            const icons = {
+                heart: <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />,
+                wallet: <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />,
+                users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+                history: <><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M12 7v5l4 2" /></>,
+                calc: <><rect width="16" height="20" x="4" y="2" rx="2" /><line x1="8" x2="16" y1="6" y2="6" /><line x1="16" x2="16" y1="14" y2="18" /><path d="M16 10h.01" /><path d="M12 10h.01" /><path d="M8 10h.01" /><path d="M12 14h.01" /><path d="M8 14h.01" /><path d="M12 18h.01" /><path d="M8 18h.01" /></>,
+                plus: <><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="16" /><line x1="8" x2="16" y1="12" y2="12" /></>,
+                copy: <><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></>,
+                logout: <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />,
+                pencil: <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />,
+                trash: <><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></>,
+                arrow: <path d="m18 8 4 4-4 4M2 12h20M6 8l-4 4 4 4" />,
+                alert: <><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" x2="12" y1="9" y2="13" /><line x1="12" x2="12.01" y1="17" y2="17" /></>,
+                x: <path d="M18 6 6 18M6 6l12 12" />
+            };
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    {icons[name]}
+                </svg>
+            );
         };
 
         const App = () => {
@@ -75,26 +71,20 @@
             const [view, setView] = useState('dashboard');
             const [toast, setToast] = useState({ show: false, msg: '' });
             const [displayMode, setDisplayMode] = useState('HKD');
-            const [authError, setAuthError] = useState(null);
-            
-            // 房間 ID 初始化
             const [roomId, setRoomId] = useState(() => {
                 const params = new URLSearchParams(window.location.search);
-                const rid = params.get('room') || localStorage.getItem('zuzu_room_id') || '';
-                return rid.toUpperCase();
+                return (params.get('room') || localStorage.getItem('zuzu_room_id') || '').toUpperCase();
             });
             const [isJoining, setIsJoining] = useState(() => {
                 const params = new URLSearchParams(window.location.search);
                 return !params.get('room') && !localStorage.getItem('zuzu_room_id');
             });
 
-            // 數據狀態
             const [members, setMembers] = useState([]);
             const [expenses, setExpenses] = useState([]);
             const [rates, setRates] = useState({ JPY: 0.051, KRW: 0.0058, THB: 0.22, CNY: 1.08, USD: 7.82, EUR: 8.50, TWD: 0.24, ISK: 0.056, HKD: 1.0 });
             const currencyNames = { JPY: "日圓", KRW: "韓幣", THB: "泰幣", CNY: "人民幣", USD: "美金", EUR: "歐羅", TWD: "台幣", ISK: "冰島幣", HKD: "港幣" };
 
-            // 表單與彈窗
             const [newMemberName, setNewMemberName] = useState('');
             const [calcAmount, setCalcAmount] = useState('100');
             const [calcCurrency, setCalcCurrency] = useState('JPY');
@@ -102,39 +92,18 @@
             const [editingId, setEditingId] = useState(null);
             const [form, setForm] = useState({ amount: '', item: '', currency: 'JPY', payer: '', participants: [] });
 
-            // 1. 匿名登入
             useEffect(() => {
-                auth.signInAnonymously()
-                    .then(cred => setUser(cred.user))
-                    .catch(e => setAuthError(e.message));
+                auth.signInAnonymously().then(cred => setUser(cred.user));
             }, []);
 
-            // 2. 資料同步 - 修復 snap.exists 錯誤
             useEffect(() => {
                 if (!roomId || !user) return;
                 localStorage.setItem('zuzu_room_id', roomId);
                 const roomRef = db.collection('zuzu_rooms').doc(roomId);
 
-                const unsubM = roomRef.collection('members').onSnapshot(snap => {
-                    setMembers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-                });
-                
-                const unsubE = roomRef.collection('expenses').onSnapshot(snap => {
-                    const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    setExpenses(list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0)));
-                });
-
-                const unsubR = roomRef.onSnapshot(snap => {
-                    // 安全的 existence 檢查：如果 snap 有 data 則代表存在
-                    const roomData = snap.data();
-                    if (roomData && roomData.rates) {
-                        setRates(roomData.rates);
-                    } else {
-                        // 初始化房間匯率
-                        roomRef.set({ rates }, { merge: true });
-                    }
-                }, err => console.error("Firestore Listen Error:", err));
-
+                const unsubM = roomRef.collection('members').onSnapshot(snap => setMembers(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+                const unsubE = roomRef.collection('expenses').onSnapshot(snap => setExpenses(snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b)=>b.createdAt - a.createdAt)));
+                const unsubR = roomRef.onSnapshot(snap => snap.exists() && snap.data().rates && setRates(snap.data().rates));
                 return () => { unsubM(); unsubE(); unsubR(); };
             }, [roomId, user]);
 
@@ -144,22 +113,14 @@
                 }
             }, [members, editingId]);
 
-            // 通用功能
-            const triggerToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 2500); };
+            const triggerToast = (msg) => { setToast({ show: true, msg }); setTimeout(() => setToast({ show: false, msg: '' }), 2000); };
 
             const handleLogout = () => {
                 localStorage.removeItem('zuzu_room_id');
-                setRoomId('');
-                setIsJoining(true);
                 const url = new URL(window.location.href);
                 url.searchParams.delete('room');
                 window.history.replaceState({}, '', url.toString());
-            };
-
-            const handleCopyId = () => {
-                const el = document.createElement('textarea'); el.value = roomId; document.body.appendChild(el); el.select();
-                document.execCommand('copy'); document.body.removeChild(el);
-                triggerToast('房號已複製！');
+                setRoomId(''); setIsJoining(true);
             };
 
             const startEdit = (exp) => {
@@ -177,20 +138,18 @@
                     setEditingId(null); triggerToast('已修改！');
                 } else {
                     await roomRef.collection('expenses').add({ ...data, createdAt: Date.now(), dateDisplay: new Date().toLocaleString('zh-HK') });
-                    triggerToast('Mark 咗喇！');
+                    triggerToast('已記帳！');
                 }
                 setView('history');
                 setForm({ amount: '', item: '', currency: 'JPY', payer: members[0]?.name || '', participants: members.map(m=>m.name) });
             };
 
-            // 結算邏輯
             const settlement = useMemo(() => {
                 const balHKD = {}; const balORIG = {}; const names = members.map(m => m.name);
                 names.forEach(n => { balHKD[n] = 0; balORIG[n] = {}; });
                 expenses.forEach(e => {
                     const hkd = e.amount * (rates[e.currency] || 0);
                     const ps = e.participants || [];
-                    if (ps.length === 0) return;
                     if (balHKD[e.payer] !== undefined) {
                         balHKD[e.payer] += hkd;
                         balORIG[e.payer][e.currency] = (balORIG[e.payer][e.currency] || 0) + e.amount;
@@ -233,15 +192,13 @@
                 </div>
             );
 
-            if (authError) return <div className="flex h-screen items-center justify-center p-10 text-center bg-white"><p className="text-rose-500 font-bold">登入失敗，請檢查 Firebase 設定。<br/><small>{authError}</small></p></div>;
-
             if (isJoining) return (
                 <div className="flex flex-col h-screen items-center justify-center p-8 bg-[#FFF5F7] space-y-8 animate-in">
-                    <div className="bg-rose-400 p-6 rounded-[3rem] text-white shadow-2xl"><Icon name="Heart" size={48} fill="white" /></div>
-                    <div className="text-center font-black text-rose-600 leading-tight"><h1 className="text-2xl">Zuzu旅行助手</h1><p className="text-xs text-rose-300 tracking-widest mt-1 uppercase">永久同步版</p></div>
+                    <div className="bg-rose-400 p-6 rounded-[3rem] text-white shadow-2xl"><SVGIcon name="heart" className="w-12 h-12" /></div>
+                    <div className="text-center font-black text-rose-600 leading-tight"><h1 className="text-2xl">Zuzu旅行助手</h1><p className="text-xs text-rose-300 tracking-widest mt-1 uppercase">Cloud Sync</p></div>
                     <div className="w-full max-w-xs space-y-3">
                         <button onClick={()=> { setRoomId(Math.random().toString(36).substring(2,8).toUpperCase()); setIsJoining(false); }} className="w-full bg-rose-500 text-white py-5 rounded-3xl font-black shadow-xl">開個新房間</button>
-                        <input type="text" placeholder="輸入 6 位編號..." className="w-full bg-white border-2 border-rose-50 rounded-3xl px-6 py-5 outline-none font-black text-center text-rose-500 uppercase" value={roomId} onChange={e => setRoomId(e.target.value.toUpperCase())} />
+                        <input type="text" placeholder="輸入 6 位房號..." className="w-full bg-white border-2 border-rose-50 rounded-3xl px-6 py-5 outline-none font-black text-center text-rose-500 uppercase" value={roomId} onChange={e => setRoomId(e.target.value.toUpperCase())} />
                         <button onClick={()=> roomId && setIsJoining(false)} className="w-full bg-white border-2 border-rose-100 text-rose-400 py-5 rounded-3xl font-black">入返舊房</button>
                     </div>
                 </div>
@@ -250,10 +207,11 @@
             return (
                 <div className="flex flex-col h-screen max-w-md mx-auto shadow-2xl relative overflow-hidden bg-[#FFF5F7]">
                     {confirmModal.show && (
-                        <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 animate-in">
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center px-6">
                             <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={()=>setConfirmModal({show:false})}></div>
                             <div className="bg-white w-full max-w-xs rounded-[2.5rem] p-8 shadow-2xl relative z-10 animate-in zoom-in-95">
-                                <Icon name="AlertTriangle" size={32} className="text-rose-500 mx-auto mb-4" /><h3 className="text-center font-black text-slate-800">確定刪除？</h3>
+                                <div className="text-rose-500 flex justify-center mb-4"><SVGIcon name="alert" className="w-10 h-10" /></div>
+                                <h3 className="text-center font-black text-slate-800">確定刪除？</h3>
                                 <div className="flex gap-3 mt-8">
                                     <button onClick={()=>setConfirmModal({show:false})} className="flex-1 bg-slate-100 py-4 rounded-2xl font-black text-slate-400">取消</button>
                                     <button onClick={async ()=>{
@@ -267,7 +225,7 @@
                     {toast.show && <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[150] bg-rose-500 text-white px-6 py-3 rounded-full shadow-2xl font-bold animate-in">{toast.msg}</div>}
 
                     <header className="bg-white px-6 py-5 border-b border-rose-100 flex justify-between items-center shrink-0">
-                        <div className="flex items-center space-x-2"><div onClick={()=>setView('dashboard')} className="bg-rose-400 p-2 rounded-2xl text-white shadow-md cursor-pointer active:scale-90"><Icon name="Heart" size={20} fill="white" /></div><h1 className="text-xl font-black text-rose-600 leading-tight">{view==='dashboard'?'埋數':view==='history'?'紀錄':view==='members'?'團友':view==='settings'?'計數':editingId?'修改':'Mark數'}</h1></div>
+                        <div className="flex items-center space-x-2"><div onClick={()=>setView('dashboard')} className="bg-rose-400 p-2 rounded-2xl text-white shadow-md active:scale-90 cursor-pointer"><SVGIcon name="heart" className="w-5 h-5" /></div><h1 className="text-xl font-black text-rose-600 leading-tight">{view==='dashboard'?'埋數':view==='history'?'紀錄':view==='members'?'團友':view==='settings'?'計數':editingId?'修改':'Mark數'}</h1></div>
                         <div className="bg-rose-50 text-rose-400 px-3 py-1 rounded-full text-[10px] font-black border border-rose-100">玩得開心💖</div>
                     </header>
 
@@ -275,17 +233,17 @@
                         {view === 'dashboard' && (
                             <div className="space-y-6 animate-in">
                                 <div className="bg-white px-6 py-4 rounded-3xl border border-rose-50 shadow-sm flex items-center justify-between">
-                                    <div><span className="text-[9px] font-black text-rose-300 uppercase block mb-0.5 tracking-widest text-xs">房間編號</span><span className="text-xl font-black text-rose-600 tracking-[0.2em]">{roomId}</span></div>
+                                    <div><span className="text-[9px] font-black text-rose-300 uppercase block mb-0.5 tracking-widest">房間編號</span><span className="text-xl font-black text-rose-600 tracking-[0.2em]">{roomId}</span></div>
                                     <div className="flex gap-2">
-                                        <button onClick={handleCopyId} className="p-2.5 bg-rose-50 rounded-xl text-rose-400 active:scale-90"><Icon name="Copy" size={16}/></button>
-                                        <button onClick={handleLogout} className="p-2.5 text-slate-200 hover:text-rose-500 active:scale-90"><Icon name="LogOut" size={18}/></button>
+                                        <button onClick={()=>{const el=document.createElement('textarea'); el.value=roomId; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); triggerToast('房號已複製！');}} className="p-2.5 bg-rose-50 rounded-xl text-rose-400 active:scale-90"><SVGIcon name="copy" size="18" /></button>
+                                        <button onClick={handleLogout} className="p-2.5 text-slate-200 hover:text-rose-500 active:scale-90"><SVGIcon name="logout" size="18" /></button>
                                     </div>
                                 </div>
-                                <div className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-rose-50 card-shadow">
-                                    <div className="flex justify-between items-center mb-6"><h2 className="text-xs font-black text-rose-300 uppercase flex items-center gap-1"><Icon name="Users" size={12}/> 團員結餘</h2><CurrencyToggle /></div>
+                                <div className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-rose-50">
+                                    <div className="flex justify-between items-center mb-6"><h2 className="text-xs font-black text-rose-300 uppercase">團員結餘</h2><CurrencyToggle /></div>
                                     <div className="space-y-4">
                                         {members.map(m => (
-                                            <div key={m.id} className="flex justify-between items-center border-b border-rose-50 pb-2">
+                                            <div key={m.id} className="flex justify-between items-center">
                                                 <span className="font-bold text-slate-600">{m.name}</span>
                                                 <div className={`px-4 py-2 rounded-2xl font-black text-sm ${displayMode==='HKD'?((settlement.balHKD[m.name]||0)>=0?'bg-teal-50 text-teal-600':'bg-rose-50 text-rose-400'):'bg-slate-50 text-slate-500'}`}>
                                                     {displayMode==='HKD' ? `$${(settlement.balHKD[m.name]||0).toFixed(1)}` : (
@@ -299,21 +257,21 @@
                                         ))}
                                     </div>
                                 </div>
-                                <div className="bg-gradient-to-br from-rose-400 to-pink-500 rounded-[2.5rem] p-8 shadow-xl text-white relative overflow-hidden">
-                                    <div className="flex justify-between items-center mb-6 relative z-10"><h2 className="text-xs font-black uppercase opacity-80 flex items-center gap-1"><Icon name="CheckCircle" size={12}/> 還款方案</h2><CurrencyToggle /></div>
+                                <div className="pink-gradient rounded-[2.5rem] p-8 shadow-xl text-white relative overflow-hidden">
+                                    <div className="flex justify-between items-center mb-6 relative z-10"><h2 className="text-xs font-black uppercase opacity-70">還款方案</h2><CurrencyToggle /></div>
                                     <div className="space-y-4 relative z-10">
                                         {displayMode==='HKD' ? (
                                             settlement.repsHKD.length > 0 ? settlement.repsHKD.map((r,i) => (
-                                                <div key={i} className="flex items-center justify-between bg-white/20 p-4 rounded-3xl backdrop-blur-md border border-white/20 text-xs font-black">
-                                                    <span>{r.f} <Icon name="ArrowRight" size={10} className="inline mx-2 opacity-60"/> {r.t}</span><span className="text-lg">${r.a.toFixed(1)}</span>
+                                                <div key={i} className="flex items-center justify-between bg-white/20 p-4 rounded-3xl backdrop-blur-md border border-white/20 text-xs font-black animate-in">
+                                                    <span>{r.f} → {r.t}</span><span className="text-lg">${r.a.toFixed(1)}</span>
                                                 </div>
-                                            )) : <div className="text-center font-bold opacity-60 italic py-4">數已清！🥂</div>
+                                            )) : <div className="text-center font-bold opacity-60">數已清！</div>
                                         ) : (
                                             settlement.repsORIG.length > 0 ? settlement.repsORIG.map((r,i) => (
-                                                <div key={i} className="flex items-center justify-between bg-white/20 p-4 rounded-3xl backdrop-blur-md border border-white/20 text-xs font-black">
-                                                    <span>{r.f} <Icon name="ArrowRight" size={10} className="inline mx-2 opacity-60"/> {r.t}</span><span className="text-lg">{r.a.toFixed(1)} {r.c}</span>
+                                                <div key={i} className="flex items-center justify-between bg-white/20 p-4 rounded-3xl backdrop-blur-md border border-white/20 text-xs font-black animate-in">
+                                                    <span>{r.f} → {r.t}</span><span className="text-lg">{r.a.toFixed(1)} {r.c}</span>
                                                 </div>
-                                            )) : <div className="text-center font-bold opacity-60 italic py-4">數已清！🥂</div>
+                                            )) : <div className="text-center font-bold opacity-60">數已清！</div>
                                         )}
                                     </div>
                                 </div>
@@ -325,85 +283,79 @@
                                     <div key={exp.id} className="bg-white p-5 rounded-[2.5rem] shadow-sm border border-rose-50 relative">
                                         <div className="flex justify-between items-start">
                                             <div className="flex-1 pr-4"><h3 className="font-black text-slate-800 leading-tight">{exp.item}</h3>
-                                                <div className="flex items-center gap-2 mt-2"><span className="text-[9px] font-black text-rose-400 bg-rose-50 px-2.5 py-0.5 rounded-lg border border-rose-100 uppercase">{exp.currency}</span><p className="text-[9px] font-bold text-slate-300 uppercase tracking-tighter">{exp.dateDisplay}</p></div>
+                                                <div className="flex items-center gap-2 mt-1"><span className="text-[9px] font-black text-rose-400 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">{exp.currency}</span><p className="text-[9px] font-bold text-slate-300 uppercase">{exp.dateDisplay}</p></div>
                                             </div>
-                                            <div className="text-right"><span className="font-black text-rose-500 text-xl tracking-tight">{exp.amount}</span><div className="text-[9px] font-black text-teal-600 mt-1 uppercase tracking-widest">≈ HKD {(exp.amount * (rates[exp.currency] || 0)).toFixed(1)}</div></div>
+                                            <div className="text-right"><span className="font-black text-rose-500 text-lg">{exp.amount}</span><div className="text-[9px] font-black text-teal-600">≈ HKD {(exp.amount * (rates[exp.currency] || 0)).toFixed(1)}</div></div>
                                         </div>
-                                        <div className="flex items-center justify-between mt-5 pt-4 border-t border-rose-50/50">
-                                            <div className="flex gap-1.5 flex-1"><span className="text-[10px] font-black px-3.5 py-1.5 bg-rose-500 text-white rounded-full">{exp.payer} 畀咗先</span><span className="text-[10px] font-black px-3.5 py-1.5 bg-slate-50 text-slate-400 rounded-full">{(exp.participants || []).length} 人分</span></div>
-                                            <div className="flex gap-1">
-                                                <button onClick={(e)=>{e.stopPropagation(); startEdit(exp);}} title="修改" className="p-3 bg-slate-50 text-slate-400 rounded-xl active:scale-90 transition-all"><Icon name="Pencil" size={18} strokeWidth={2.5}/></button>
-                                                <button onClick={(e)=>{e.stopPropagation(); setConfirmModal({show:true, type:'expense', id:exp.id, title:exp.item});}} title="刪除" className="p-3 bg-rose-50 text-rose-200 rounded-xl active:scale-90 transition-all"><Icon name="Trash2" size={18} strokeWidth={2.5}/></button>
+                                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-rose-50">
+                                            <div className="flex gap-1.5"><span className="text-[9px] font-black px-3 py-1 bg-rose-500 text-white rounded-full">{exp.payer} 畀住先</span></div>
+                                            <div className="flex gap-2">
+                                                <button onClick={()=>startEdit(exp)} className="p-2 text-slate-400 active:scale-90"><SVGIcon name="pencil" className="w-5 h-5" /></button>
+                                                <button onClick={()=>setConfirmModal({show:true, type:'expense', id:exp.id, title:exp.item})} className="p-2 text-rose-200 active:scale-90"><SVGIcon name="trash" className="w-5 h-5" /></button>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
-                                {expenses.length === 0 && <div className="text-center py-32 opacity-20"><Icon name="History" size={64} className="mx-auto" /></div>}
+                                {expenses.length === 0 && <div className="text-center py-32 opacity-20"><SVGIcon name="history" className="w-16 h-16 mx-auto" /></div>}
                             </div>
                         )}
                         {view === 'addExpense' && (
-                            <div className="space-y-6 animate-in pb-10">
-                                <div className="bg-white p-8 rounded-[3rem] shadow-sm border border-rose-50 space-y-6 relative overflow-hidden card-shadow">
-                                    {editingId && <div className="absolute top-0 left-0 right-0 h-1.5 bg-teal-400 shadow-md"></div>}
-                                    <div className="flex flex-col space-y-1">
-                                        <label className="text-[10px] font-black text-rose-300 uppercase ml-4 tracking-widest">金額與項目</label>
-                                        <div className="flex items-center gap-3">
-                                            <select className="bg-rose-50 text-rose-500 rounded-2xl px-4 py-3 font-black outline-none border border-rose-100 shadow-sm" value={form.currency} onChange={e=>setForm({...form, currency: e.target.value})}>{Object.keys(rates).map(c => <option key={c} value={c}>{c}</option>)}</select>
-                                            <input type="number" placeholder="幾錢？" className="flex-1 text-3xl font-black outline-none text-rose-500 bg-transparent border-b-2 border-rose-100 focus:border-rose-400 transition-all" value={form.amount} onChange={e=>setForm({...form, amount: e.target.value})} />
-                                        </div>
-                                        <input type="text" placeholder="食咗咩？買咗咩？" className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 outline-none font-bold mt-4 shadow-inner" value={form.item} onChange={e=>setForm({...form, item: e.target.value})} />
+                            <div className="space-y-6 animate-in">
+                                <div className="bg-white p-8 rounded-[3rem] shadow-sm border border-rose-50 space-y-6">
+                                    <div className="flex items-center gap-3">
+                                        <select className="bg-rose-50 text-rose-500 rounded-2xl px-4 py-3 font-black outline-none border border-rose-100" value={form.currency} onChange={e=>setForm({...form, currency: e.target.value})}>{Object.keys(rates).map(c => <option key={c} value={c}>{c}</option>)}</select>
+                                        <input type="number" placeholder="金額" className="flex-1 text-3xl font-black outline-none text-rose-500 bg-transparent border-b-2 border-rose-50" value={form.amount} onChange={e=>setForm({...form, amount: e.target.value})} />
                                     </div>
+                                    <input type="text" placeholder="項目" className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 outline-none font-bold mt-4" value={form.item} onChange={e=>setForm({...form, item: e.target.value})} />
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-rose-300 uppercase ml-4 tracking-widest">付款人</label>
+                                    <label className="text-[9px] font-black text-rose-300 uppercase ml-4">付款人</label>
                                     <div className="flex flex-wrap gap-2">{members.map(m=>(<button key={m.id} onClick={()=>setForm({...form, payer:m.name})} className={`px-6 py-3 rounded-2xl text-xs font-black border-2 transition-all ${form.payer===m.name?'bg-rose-500 border-rose-500 text-white shadow-lg scale-105':'bg-white border-rose-50 text-rose-300'}`}>{m.name}</button>))}</div>
-                                    <label className="text-[10px] font-black text-rose-300 uppercase ml-4 block mt-4 tracking-widest">分攤成員</label>
-                                    <div className="grid grid-cols-2 gap-2">{members.map(m=>(<button key={m.id} onClick={()=>setForm(prev=>({ ...prev, participants: prev.participants.includes(m.name)?prev.participants.filter(p=>p!==m.name):[...prev.participants, m.name]}))} className={`flex items-center px-4 py-4 rounded-2xl text-xs font-black border-2 transition-all ${form.participants.includes(m.name)?'border-rose-400 bg-rose-50 text-rose-600':'border-rose-50 bg-white text-rose-200'}`}><div className={`w-4 h-4 rounded-full mr-3 border-2 flex items-center justify-center ${form.participants.includes(m.name)?'bg-rose-400 border-rose-400':'border-rose-100'}`}>{form.participants.includes(m.name) && <Icon name="Check" size={10} strokeWidth={4} className="text-white"/>}</div>{m.name}</button>))}</div>
+                                    <label className="text-[9px] font-black text-rose-300 uppercase ml-4 block mt-4">參與分攤</label>
+                                    <div className="grid grid-cols-2 gap-2">{members.map(m=>(<button key={m.id} onClick={()=>setForm(prev=>({ ...prev, participants: prev.participants.includes(m.name)?prev.participants.filter(p=>p!==m.name):[...prev.participants, m.name]}))} className={`flex items-center px-4 py-4 rounded-2xl text-xs font-black border-2 transition-all ${form.participants.includes(m.name)?'border-rose-400 bg-rose-50 text-rose-600':'border-rose-50 bg-white text-rose-200'}`}><div className={`w-4 h-4 rounded-full mr-3 border-2 ${form.participants.includes(m.name)?'bg-rose-400 border-rose-400':'border-rose-100'}`}></div>{m.name}</button>))}</div>
                                 </div>
-                                <button onClick={handleSave} className={`w-full ${editingId?'bg-teal-500 shadow-teal-100':'bg-rose-500 shadow-rose-100'} text-white py-6 rounded-[2.5rem] text-lg font-black shadow-xl active:scale-95 transition-all`}>{editingId?'確認修改':'Mark 咗佢'}</button>
+                                <button onClick={handleSave} className="w-full bg-rose-500 text-white py-6 rounded-3xl text-lg font-black shadow-xl active:scale-95 transition-all">{editingId?'確認修改':'Mark 數'}</button>
                             </div>
                         )}
                         {view === 'members' && (
                             <div className="space-y-4 animate-in">
-                                <div className="relative"><input type="text" placeholder="入團友個名..." className="w-full bg-white border-2 border-rose-50 rounded-3xl px-6 py-5 outline-none font-bold shadow-sm focus:border-rose-400 transition-all" value={newMemberName} onChange={e=>setNewMemberName(e.target.value)} onKeyPress={e=>e.key==='Enter'&& (async()=>{if(!newMemberName)return; await db.collection('zuzu_rooms').doc(roomId).collection('members').add({name:newMemberName}); setNewMemberName('');})()} /><button onClick={async ()=>{if(!newMemberName)return; await db.collection('zuzu_rooms').doc(roomId).collection('members').add({name:newMemberName}); setNewMemberName('');}} className="absolute right-3 top-3 bottom-3 bg-rose-400 text-white px-5 rounded-2xl active:scale-95 transition-all shadow-md"><Icon name="PlusCircle" size={20}/></button></div>
-                                <div className="space-y-2">{members.map(m=>(<div key={m.id} className="bg-white px-6 py-4 rounded-3xl border border-rose-50 flex justify-between items-center shadow-sm hover:border-rose-200 transition-all"><span className="font-black text-slate-600">{m.name}</span><button onClick={()=>setConfirmModal({show:true, type:'member', id:m.id, title:m.name})} className="text-rose-100 hover:text-rose-500 p-2 transition-colors"><Icon name="Trash2" size={18}/></button></div>))}</div>
+                                <div className="relative"><input type="text" placeholder="團友名..." className="w-full bg-white border-2 border-rose-50 rounded-3xl px-6 py-5 outline-none font-bold" value={newMemberName} onChange={e=>setNewMemberName(e.target.value)} /><button onClick={async ()=>{if(!newMemberName)return; await db.collection('zuzu_rooms').doc(roomId).collection('members').add({name:newMemberName}); setNewMemberName('');}} className="absolute right-3 top-3 bottom-3 bg-rose-400 text-white px-5 rounded-2xl active:scale-95"><SVGIcon name="plus" size="18" /></button></div>
+                                <div className="space-y-2">{members.map(m=>(<div key={m.id} className="bg-white px-6 py-4 rounded-3xl border border-rose-50 flex justify-between items-center shadow-sm"><span className="font-black text-slate-600">{m.name}</span><button onClick={()=>setConfirmModal({show:true, type:'member', id:m.id, title:m.name})} className="text-rose-100"><SVGIcon name="trash" size="18" /></button></div>))}</div>
                             </div>
                         )}
                         {view === 'settings' && (
-                            <div className="space-y-6 pb-20 animate-in">
-                                <div className="bg-white p-8 rounded-[3.5rem] shadow-sm border border-rose-50 text-center space-y-4 card-shadow">
+                            <div className="space-y-4 pb-20 animate-in">
+                                <div className="bg-white p-8 rounded-[3rem] shadow-sm border border-rose-50 text-center space-y-4">
                                     <div className="flex justify-center items-center gap-3">
-                                        <input type="number" className="w-24 text-center text-3xl font-black text-rose-500 outline-none bg-transparent border-b-2 border-rose-100 focus:border-rose-400" value={calcAmount} onChange={e=>setCalcAmount(e.target.value)} />
-                                        <select className="text-lg font-black text-slate-400 outline-none bg-transparent appearance-none" value={calcCurrency} onChange={e=>setCalcCurrency(e.target.value)}>{Object.keys(rates).filter(c=>c!=='HKD').map(c=><option key={c} value={c}>{c}</option>)}</select>
+                                        <input type="number" className="w-24 text-center text-3xl font-black text-rose-500 outline-none bg-transparent border-b-2 border-rose-100" value={calcAmount} onChange={e=>setCalcAmount(e.target.value)} />
+                                        <select className="text-lg font-black text-slate-400 outline-none bg-transparent" value={calcCurrency} onChange={e=>setCalcCurrency(e.target.value)}>{Object.keys(rates).filter(c=>c!=='HKD').map(c=><option key={c} value={c}>{c}</option>)}</select>
                                     </div>
-                                    <Icon name="ArrowRightLeft" className="mx-auto text-rose-200" />
-                                    <div className="text-5xl font-black text-slate-800 tabular-nums">${(parseFloat(calcAmount||0)*(rates[calcCurrency]||0)).toFixed(2)}</div>
-                                    <div className="text-[10px] font-black text-rose-300 uppercase tracking-widest mt-2">港幣 HKD</div>
+                                    <div className="flex justify-center text-rose-200"><SVGIcon name="arrow" className="w-6 h-6" /></div>
+                                    <div className="text-4xl font-black text-slate-800">${(parseFloat(calcAmount||0)*(rates[calcCurrency]||0)).toFixed(2)}</div>
+                                    <div className="text-[10px] font-black text-rose-300 uppercase tracking-widest">港幣 HKD</div>
                                 </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-rose-300 uppercase ml-4 tracking-widest">自定義匯率 (1外幣 = ? HKD)</label>
-                                    <div className="grid gap-2">
-                                        {Object.keys(rates).filter(c=>c!=='HKD').map(c => (
-                                            <div key={c} className="bg-white p-4 rounded-2xl border border-rose-50 flex justify-between items-center shadow-sm">
-                                                <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-2xl bg-rose-400 text-white flex items-center justify-center font-black text-[10px] shadow-sm">{c}</div><span className="font-black text-slate-600 text-sm">{currencyNames[c]}</span></div>
-                                                <input type="number" className="w-24 text-right font-black text-rose-400 outline-none border-b border-transparent focus:border-rose-100" value={rates[c]} onChange={async e=>{
-                                                    const val = parseFloat(e.target.value)||0; const nr = {...rates, [c]: val}; setRates(nr);
-                                                    await db.collection('zuzu_rooms').doc(roomId).set({rates: nr}, {merge:true});
-                                                }} />
-                                            </div>
-                                        ))}
-                                    </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-rose-300 uppercase ml-4">自定義匯率 (1外幣 = ? HKD)</label>
+                                    {Object.keys(rates).filter(c=>c!=='HKD').map(c => (
+                                        <div key={c} className="bg-white p-4 rounded-2xl border border-rose-50 flex justify-between items-center">
+                                            <span className="font-black text-slate-500">{c} {currencyNames[c]}</span>
+                                            <input type="number" className="w-24 text-right font-black text-rose-400 outline-none" value={rates[c]} onChange={async e=>{
+                                                const val = parseFloat(e.target.value)||0; const nr = {...rates, [c]: val}; setRates(nr);
+                                                await db.collection('zuzu_rooms').doc(roomId).set({rates: nr}, {merge:true});
+                                            }} />
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
                     </main>
 
                     <nav className="fixed bottom-8 left-6 right-6 h-20 bg-white/95 backdrop-blur-2xl border border-white/50 shadow-2xl rounded-[2.5rem] px-4 flex items-center justify-between z-100">
-                        <button onClick={()=>setView('dashboard')} className={`flex flex-col items-center w-full transition-all ${view==='dashboard'?'text-rose-500 scale-105':'text-rose-200 opacity-60'}`}><Icon name="Wallet" /><span className="text-[9px] font-black mt-1">埋數</span></button>
-                        <button onClick={()=>setView('members')} className={`flex flex-col items-center w-full transition-all ${view==='members'?'text-rose-500 scale-105':'text-rose-200 opacity-60'}`}><Icon name="Users" /><span className="text-[9px] font-black mt-1">團友</span></button>
-                        <button onClick={()=>{setEditingId(null);setView('history');}} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg ${view==='history'?'bg-rose-500 text-white scale-110 shadow-rose-200':'bg-rose-50 text-rose-300'}`}><Icon name="History" strokeWidth={3}/></button>
-                        <button onClick={()=>setView('settings')} className={`flex flex-col items-center w-full transition-all ${view==='settings'?'text-rose-500 scale-105':'text-rose-200 opacity-60'}`}><Icon name="Calculator" /><span className="text-[9px] font-black mt-1">計數</span></button>
-                        <button onClick={()=>setView('addExpense')} className={`flex flex-col items-center w-full transition-all ${view==='addExpense'?'text-rose-500 scale-105':'text-rose-200 opacity-60'}`}><Icon name="PlusCircle" /><span className="text-[9px] font-black mt-1">Mark數</span></button>
+                        <button onClick={()=>setView('dashboard')} className={`flex flex-col items-center w-full ${view==='dashboard'?'text-rose-500':'text-rose-200'}`}><SVGIcon name="wallet" /><span className="text-[9px] font-bold mt-1">埋數</span></button>
+                        <button onClick={()=>setView('members')} className={`flex flex-col items-center w-full ${view==='members'?'text-rose-500':'text-rose-200'}`}><SVGIcon name="users" /><span className="text-[9px] font-bold mt-1">團友</span></button>
+                        <button onClick={()=>{setEditingId(null);setView('history');}} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${view==='history'?'bg-rose-500 text-white shadow-lg':'bg-rose-50 text-rose-300'}`}><SVGIcon name="history" /></button>
+                        <button onClick={()=>setView('settings')} className={`flex flex-col items-center w-full ${view==='settings'?'text-rose-500':'text-rose-200'}`}><SVGIcon name="calc" /><span className="text-[9px] font-bold mt-1">計數機</span></button>
+                        <button onClick={()=>setView('addExpense')} className={`flex flex-col items-center w-full ${view==='addExpense'?'text-rose-500':'text-rose-200'}`}><SVGIcon name="plus" /><span className="text-[9px] font-bold mt-1">Mark數</span></button>
                     </nav>
                 </div>
             );
