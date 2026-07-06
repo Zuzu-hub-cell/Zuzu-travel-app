@@ -24,6 +24,11 @@
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
     }
+    @media (max-height: 740px) {
+      #app {
+        height: 600px !important;
+      }
+    }
     .main-accent {
       color: #df4d62;
     }
@@ -60,7 +65,7 @@
 <body class="h-screen w-screen flex justify-center items-center bg-gradient-to-br from-[#fbeee4] to-[#fcdce1] p-4 overflow-hidden relative">
 
   <!-- Main Container (Fixed Viewport, holds the navigation strictly at bottom) -->
-  <div id="app" class="w-full max-w-sm bg-[#FAF5F5] h-[82vh] max-h-[800px] flex flex-col justify-between relative shadow-[0_20px_60px_-10px_rgba(223,77,98,0.25)] border-4 border-white border-solid rounded-[36px] overflow-hidden px-0">
+  <div id="app" class="w-full max-w-sm bg-[#FAF5F5] h-[680px] flex flex-col justify-between relative shadow-[0_20px_60px_-10px_rgba(223,77,98,0.25)] border-4 border-white border-solid rounded-[36px] overflow-hidden px-0">
     
     <!-- Splash / Loading Overlay -->
     <div id="splash-screen" class="absolute inset-0 bg-[#FAF5F5] z-50 flex flex-col items-center justify-start pt-32 page-transition">
