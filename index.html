@@ -1596,7 +1596,12 @@
         select.appendChild(option);
       });
 
-      select.value = 'HKD';
+      const lastUsedCurrency = localStorage.getItem('last_used_currency');
+      if (lastUsedCurrency && SUPPORTED_CURRENCIES[lastUsedCurrency]) {
+        select.value = lastUsedCurrency;
+      } else {
+        select.value = 'HKD';
+      }
 
       renderMarkPayerButtons();
       renderMarkSplitButtons();
@@ -2109,7 +2114,7 @@ const fetchLiveRatesFromServer = async () => {
         ...roomData,
         expenses: updatedExpenses
       });
-
+localStorage.setItem('last_used_currency', currency);
       document.getElementById('mark-amount').value = '';
       document.getElementById('mark-item-name').value = '';
       
