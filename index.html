@@ -352,8 +352,13 @@
                 <h3 class="text-sm font-bold text-gray-400 flex items-center gap-1.5">
                   <i class="fas fa-cog"></i> 匯率基準 (1 外幣 = ? HKD)
                 </h3>
-                <span class="text-xs text-pink-400 font-bold bg-accent-light px-2.5 py-1 rounded-full">直接撳個數值就可以改</span>
-              </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] text-pink-400 font-bold bg-accent-light px-2 py-0.5 rounded-full">直接撳可以改</span>
+          <button id="btn-fetch-live-rates" type="button" class="text-[10px] bg-accent text-white font-bold px-2 py-0.5 rounded-full hover:bg-[#cd4256] transition-all">
+            <i class="fas fa-sync-alt animate-spin-hover"></i> 實時更新
+          </button>
+        </div>
+      </div>
               
               <div id="rates-editor-container" class="space-y-2">
                 <!-- Editable rate fields -->
