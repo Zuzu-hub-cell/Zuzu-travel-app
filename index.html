@@ -2022,7 +2022,36 @@
 
     document.getElementById('calc-input-amount').addEventListener('input', calculateExchange);
     document.getElementById('calc-input-currency').addEventListener('change', calculateExchange);
-
+const fetchLiveRatesFromServer = async () => {
+      showToast("正在從雲端抓取最新實時匯率...");
+      try {
+        const response = await fetch('https://api.frankfurter.dev/v1/latest?base=HKD');
+        if (!response.ok) throw new Error('API連線失敗');
+        
+        const data = await response.json();
+        const liveRates = data.rates; 
+        
+        const updatedRates = { ...roomData.rates };
+        
+        Object.keys(SUPPORTED_CURRENCIES).forEach(curr => {
+          if (curr === 'HKD') return;
+          if (liveRates[curr]) {
+            updatedRates[curr] = parseFloat((1 / liveRates[curr]).toFixed(5));
+          }
+        });
+        
+        await updateRoomInDb({
+          ...roomData,
+          rates: updatedRates
+        });
+        
+        showToast("🎉 所有貨幣已成功同步至最新國際匯率！");
+      } catch (err) {
+        console.error(err);
+        showToast("獲取失敗，請稍後再試。");
+      }
+    };
+    document.getElementById('btn-fetch-live-rates').addEventListener('click', fetchLiveRatesFromServer);
     // Connected to the JS state engine
     document.getElementById('btn-mark-all').addEventListener('click', () => {
       markSelectedParticipants = [...roomData.members];
