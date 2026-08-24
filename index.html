@@ -73,47 +73,67 @@
     }
 
     /* ======================================================== */
-    /* 🌙 清楚舒適高對比深色模式 (專業炭灰黑階)                  */
+    /* 🌙 專業極簡深炭黑模式（純黑灰白 + 柔和琥珀金重點）       */
     /* ======================================================== */
     body.dark-mode {
-      background: #0d0d0f !important;
-      color: #f3f3f6 !important;
+      background: #101014 !important;
+      color: #f0f0f4 !important;
     }
     body.dark-mode #app {
-      background-color: #141416 !important;
-      border-color: #2c2c32 !important;
-      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.8) !important;
+      background-color: #16161b !important;
+      border-color: #2e2e38 !important;
+      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.85) !important;
     }
     body.dark-mode header,
     body.dark-mode nav {
-      background-color: #1a1a1e !important;
-      border-color: #2a2a30 !important;
+      background-color: #1a1a22 !important;
+      border-color: #2c2c38 !important;
     }
     body.dark-mode .bg-white {
-      background-color: #202024 !important;
-      color: #f3f3f6 !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+      background-color: #20202a !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
     }
     body.dark-mode .bg-\[\#FAF5F5\] {
-      background-color: #141416 !important;
+      background-color: #141418 !important;
     }
+
+    /* 文字純淨高對比 */
     body.dark-mode .text-gray-700,
     body.dark-mode .text-gray-800,
     body.dark-mode .text-slate-800,
-    body.dark-mode .text-slate-700 {
+    body.dark-mode .text-slate-700,
+    body.dark-mode span.font-black,
+    body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
       color: #ffffff !important;
     }
-    body.dark-mode .text-gray-600 {
-      color: #d1d1d8 !important;
-    }
+    body.dark-mode .text-gray-600,
     body.dark-mode .text-gray-500,
     body.dark-mode .text-gray-400 {
-      color: #9b9ba6 !important;
+      color: #9c9cae !important;
     }
+
+    /* 取消所有紅/粉色，改用高級柔和暖金或純白灰重點 */
+    body.dark-mode .main-accent,
+    body.dark-mode .text-pink-400,
     body.dark-mode .text-pink-300,
-    body.dark-mode .text-pink-400 {
-      color: #f87171 !important;
+    body.dark-mode .text-pink-500 {
+      color: #e5b869 !important; /* 柔和暖金色，保護雙眼又清晰 */
     }
+    body.dark-mode .bg-accent {
+      background-color: #e5b869 !important;
+      color: #16161b !important;
+    }
+    body.dark-mode .bg-accent-light,
+    body.dark-mode .bg-pink-50,
+    body.dark-mode .bg-pink-50\/50,
+    body.dark-mode .bg-pink-50\/40,
+    body.dark-mode .bg-pink-50\/20 {
+      background-color: #272522 !important;
+      color: #e5b869 !important;
+    }
+
+    /* 邊框線條乾淨炭灰 */
     body.dark-mode .border-pink-100,
     body.dark-mode .border-pink-100\/50,
     body.dark-mode .border-pink-100\/40,
@@ -122,38 +142,47 @@
     body.dark-mode .border-pink-50,
     body.dark-mode .border-pink-50\/50,
     body.dark-mode .divide-pink-100\/50 > :not([hidden]) ~ :not([hidden]) {
-      border-color: #2c2c34 !important;
+      border-color: #2c2c38 !important;
     }
-    body.dark-mode .bg-accent-light {
-      background-color: #2e1d22 !important;
-      color: #ff6b81 !important;
-    }
+
+    /* 表單元件輸入框高對比 */
     body.dark-mode input,
     body.dark-mode select {
-      background-color: #26262c !important;
+      background-color: #242430 !important;
       color: #ffffff !important;
-      border-color: #383842 !important;
+      border-color: #363646 !important;
     }
     body.dark-mode input::placeholder {
-      color: #727280 !important;
+      color: #707084 !important;
     }
+
+    /* 小計算機深色模式 */
     body.dark-mode #calc-bottom-sheet {
-      background-color: #18181c !important;
-      border-color: #2c2c34 !important;
-      box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.7) !important;
+      background-color: #16161c !important;
+      border-color: #2c2c38 !important;
+      box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.8) !important;
     }
     body.dark-mode #calc-bottom-sheet .calc-key {
-      background-color: #24242a !important;
-      border-color: #34343e !important;
+      background-color: #22222c !important;
+      border-color: #2e2e3c !important;
       color: #ffffff !important;
     }
     body.dark-mode #calc-bottom-sheet .calc-key:active {
-      background-color: #383844 !important;
-      color: #ff6b81 !important;
+      background-color: #2c2a26 !important;
+      color: #e5b869 !important;
     }
     body.dark-mode #calc-bottom-sheet .bg-accent-light {
-      background-color: #351e24 !important;
-      color: #ff6b81 !important;
+      background-color: #282522 !important;
+      color: #e5b869 !important;
+    }
+    body.dark-mode #btn-calc-clear {
+      background-color: #22222c !important;
+      border-color: #2e2e3c !important;
+      color: #a4a4b2 !important;
+    }
+    body.dark-mode #btn-calc-done {
+      background-color: #e5b869 !important;
+      color: #16161b !important;
     }
   </style>
 </head>
@@ -219,7 +248,7 @@
       <!-- ========================================== -->
       <div id="workspace" class="hidden flex-grow flex flex-col justify-between h-full overflow-hidden">
         
-        <!-- TOP NAVBAR (日夜間切換掣，純變色無 Toast) -->
+        <!-- TOP NAVBAR -->
         <header class="bg-white px-5 py-4 flex items-center justify-between border-b border-pink-100/30 shrink-0">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white text-lg shadow-sm">
@@ -237,7 +266,7 @@
           </div>
         </header>
 
-        <!-- CONTAINER FOR VIEWS (Only this scrolls) -->
+        <!-- CONTAINER FOR VIEWS -->
         <main class="flex-grow h-0 px-2 py-4 space-y-5 overflow-y-auto no-scrollbar">
 
           <!-- PAGE 1: 埋數 (Settle Accounts) -->
@@ -419,7 +448,6 @@
           <div id="view-mark" class="tab-view hidden space-y-5">
             <div class="bg-white rounded-3xl p-6 soft-shadow border border-pink-100/40 space-y-5">
               
-              <!-- 貨幣同金額（直接喺 input 顯示算式） -->
               <div class="space-y-1">
                 <label class="text-xs font-bold text-gray-400">貨幣同金額</label>
                 <div class="flex gap-3">
@@ -520,11 +548,9 @@
     </div>
 
     <!-- ==================================================== -->
-    <!-- 🧮 專屬自訂小鍵盤（無遮罩、直接貼底、清爽直接） -->
+    <!-- 🧮 專屬自訂小鍵盤 -->
     <!-- ==================================================== -->
     <div id="calc-bottom-sheet" class="hidden absolute bottom-0 left-0 right-0 z-50 bg-[#FAF5F5] text-[#3a2d30] rounded-t-[32px] p-4 pb-6 shadow-[0_-12px_28px_rgba(223,77,98,0.18)] border-t-2 border-pink-100">
-      
-      <!-- 控制列：AC 與 完成 -->
       <div class="flex items-center justify-end gap-2 pb-2.5 mb-1 border-b border-pink-100/60">
         <button id="btn-calc-clear" type="button" class="bg-white text-gray-400 hover:text-gray-600 font-bold px-4 py-1.5 rounded-full text-xs border border-pink-100 shadow-sm active:scale-95 transition-all">
           AC
@@ -534,7 +560,6 @@
         </button>
       </div>
 
-      <!-- 4x4 簡約數字鍵盤 -->
       <div class="grid grid-cols-4 gap-1.5 text-center font-bold text-xl select-none">
         <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="7">7</button>
         <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="8">8</button>
@@ -729,7 +754,6 @@
       'ZAR': { name: 'ZAR 南非蘭特', defaultRate: 0.43 }
     };
 
-    // Firebase Global Setup
     const appId = 'zuzu-travel-bookkeeper';
 
     const firebaseConfig = {
@@ -775,7 +799,7 @@
       if (theme === 'dark') {
         document.body.classList.add('dark-mode');
         if (icon) {
-          icon.className = 'fas fa-sun text-yellow-400';
+          icon.className = 'fas fa-sun text-amber-300';
         }
       } else {
         document.body.classList.remove('dark-mode');
