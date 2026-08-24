@@ -23,7 +23,7 @@
       color: #3a2d30;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior: none; 
-      transition: background-color 0.3s ease;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
     main {
       -webkit-overflow-scrolling: touch;
@@ -73,43 +73,46 @@
     }
 
     /* ======================================================== */
-    /* 🌙 DARK THEME 全域暗色模式覆蓋樣式                       */
+    /* 🌙 清楚舒適高對比深色模式 (專業炭灰黑階)                  */
     /* ======================================================== */
     body.dark-mode {
-      background: linear-gradient(135deg, #181214 0%, #201518 100%) !important;
-      color: #ece1e3 !important;
+      background: #0d0d0f !important;
+      color: #f3f3f6 !important;
     }
     body.dark-mode #app {
-      background-color: #171314 !important;
-      border-color: #38282c !important;
-      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7) !important;
+      background-color: #141416 !important;
+      border-color: #2c2c32 !important;
+      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.8) !important;
     }
     body.dark-mode header,
     body.dark-mode nav {
-      background-color: #1f181a !important;
-      border-color: #332428 !important;
+      background-color: #1a1a1e !important;
+      border-color: #2a2a30 !important;
     }
     body.dark-mode .bg-white {
-      background-color: #241c1f !important;
-      color: #ece1e3 !important;
+      background-color: #202024 !important;
+      color: #f3f3f6 !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
     }
     body.dark-mode .bg-\[\#FAF5F5\] {
-      background-color: #1a1416 !important;
+      background-color: #141416 !important;
     }
     body.dark-mode .text-gray-700,
     body.dark-mode .text-gray-800,
-    body.dark-mode .text-slate-800 {
-      color: #f3eaec !important;
-    }
+    body.dark-mode .text-slate-800,
     body.dark-mode .text-slate-700 {
-      color: #f7eff0 !important;
+      color: #ffffff !important;
     }
     body.dark-mode .text-gray-600 {
-      color: #d1c1c5 !important;
+      color: #d1d1d8 !important;
     }
     body.dark-mode .text-gray-500,
     body.dark-mode .text-gray-400 {
-      color: #9e898f !important;
+      color: #9b9ba6 !important;
+    }
+    body.dark-mode .text-pink-300,
+    body.dark-mode .text-pink-400 {
+      color: #f87171 !important;
     }
     body.dark-mode .border-pink-100,
     body.dark-mode .border-pink-100\/50,
@@ -119,34 +122,38 @@
     body.dark-mode .border-pink-50,
     body.dark-mode .border-pink-50\/50,
     body.dark-mode .divide-pink-100\/50 > :not([hidden]) ~ :not([hidden]) {
-      border-color: #3d2b30 !important;
+      border-color: #2c2c34 !important;
     }
     body.dark-mode .bg-accent-light {
-      background-color: #3b1820 !important;
-      color: #ff7b90 !important;
+      background-color: #2e1d22 !important;
+      color: #ff6b81 !important;
     }
     body.dark-mode input,
     body.dark-mode select {
-      background-color: #241c1f !important;
-      color: #f3eaec !important;
-      border-color: #3d2b30 !important;
+      background-color: #26262c !important;
+      color: #ffffff !important;
+      border-color: #383842 !important;
     }
     body.dark-mode input::placeholder {
-      color: #7a6369 !important;
+      color: #727280 !important;
     }
     body.dark-mode #calc-bottom-sheet {
-      background-color: #1a1416 !important;
-      border-color: #3d2b30 !important;
-      box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.6) !important;
+      background-color: #18181c !important;
+      border-color: #2c2c34 !important;
+      box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.7) !important;
     }
     body.dark-mode #calc-bottom-sheet .calc-key {
-      background-color: #241c1f !important;
-      border-color: #3d2b30 !important;
-      color: #ece1e3 !important;
+      background-color: #24242a !important;
+      border-color: #34343e !important;
+      color: #ffffff !important;
     }
     body.dark-mode #calc-bottom-sheet .calc-key:active {
-      background-color: #3b1820 !important;
-      color: #ff7b90 !important;
+      background-color: #383844 !important;
+      color: #ff6b81 !important;
+    }
+    body.dark-mode #calc-bottom-sheet .bg-accent-light {
+      background-color: #351e24 !important;
+      color: #ff6b81 !important;
     }
   </style>
 </head>
@@ -212,7 +219,7 @@
       <!-- ========================================== -->
       <div id="workspace" class="hidden flex-grow flex flex-col justify-between h-full overflow-hidden">
         
-        <!-- TOP NAVBAR (加入日夜間主題切換掣) -->
+        <!-- TOP NAVBAR (日夜間切換掣，純變色無 Toast) -->
         <header class="bg-white px-5 py-4 flex items-center justify-between border-b border-pink-100/30 shrink-0">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white text-lg shadow-sm">
@@ -759,7 +766,7 @@
     let editSelectedParticipants = [];
 
     // ------------------------------------------------------------------
-    // 🌙 主題切換與記憶管理
+    // 🌙 主題切換與記憶管理（純安靜切換）
     // ------------------------------------------------------------------
     let currentTheme = localStorage.getItem('zuzu_theme_mode') || 'light';
 
@@ -779,13 +786,11 @@
       localStorage.setItem('zuzu_theme_mode', theme);
     };
 
-    // 初始化讀取主題
     applyTheme(currentTheme);
 
     document.getElementById('btn-toggle-theme').addEventListener('click', () => {
       currentTheme = currentTheme === 'light' ? 'dark' : 'light';
       applyTheme(currentTheme);
-      showToast(currentTheme === 'dark' ? '已切換至深色模式 🌙' : '已切換至淺色模式 ☀️');
     });
 
     // ------------------------------------------------------------------
@@ -876,7 +881,6 @@
       closeCalculatorSheet();
     });
 
-    // 點擊輸入框打開小鍵盤
     document.getElementById('mark-amount').addEventListener('click', (e) => {
       e.stopPropagation();
       openCalculatorSheet(e.target);
@@ -890,7 +894,6 @@
       openCalculatorSheet(e.target);
     });
 
-    // 點擊外部自動收起小鍵盤
     document.addEventListener('click', (e) => {
       const calcSheet = document.getElementById('calc-bottom-sheet');
       if (!calcSheet.classList.contains('hidden')) {
