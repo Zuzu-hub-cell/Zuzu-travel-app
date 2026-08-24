@@ -93,9 +93,7 @@
     <!-- MAIN APP STRUCTURE -->
     <div class="flex-grow flex flex-col w-full h-full overflow-hidden">
 
-      <!-- ========================================== -->
-      <!-- 1. LANDING PAGE (主頁 / 登入房號) -->
-      <!-- ========================================== -->
+      <!-- 1. LANDING PAGE -->
       <div id="page-landing" class="hidden flex-grow flex flex-col justify-between p-8 pb-12 overflow-y-auto no-scrollbar">
         <div class="flex flex-col items-center mt-12">
           <div class="w-36 h-36 bg-accent rounded-full flex items-center justify-center text-white text-6xl shadow-xl mb-8 relative">
@@ -133,12 +131,10 @@
         </div>
       </div>
 
-      <!-- ========================================== -->
-      <!-- WORKSPACE AREA (當進入房間後的頁面) -->
-      <!-- ========================================== -->
+      <!-- WORKSPACE AREA -->
       <div id="workspace" class="hidden flex-grow flex flex-col justify-between h-full overflow-hidden">
         
-        <!-- TOP NAVBAR (Fixed) -->
+        <!-- TOP NAVBAR -->
         <header class="bg-white px-5 py-4 flex items-center justify-between border-b border-pink-100/30 shrink-0">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white text-lg shadow-sm">
@@ -151,10 +147,10 @@
           </span>
         </header>
 
-        <!-- CONTAINER FOR VIEWS (Only this scrolls) -->
+        <!-- CONTAINER FOR VIEWS -->
         <main class="flex-grow h-0 px-2 py-4 space-y-5 overflow-y-auto no-scrollbar">
 
-          <!-- PAGE 1: 埋數 (Settle Accounts) -->
+          <!-- PAGE 1: 埋數 -->
           <div id="view-settle" class="tab-view space-y-5">
             <div class="bg-white rounded-3xl p-5 soft-shadow border border-pink-100/40 relative overflow-hidden">
               <p class="text-xs font-bold text-pink-300 tracking-wider mb-1">房間編號</p>
@@ -333,7 +329,7 @@
           <div id="view-mark" class="tab-view hidden space-y-5">
             <div class="bg-white rounded-3xl p-6 soft-shadow border border-pink-100/40 space-y-5">
               
-              <!-- 貨幣同金額（點擊金額彈出粉色小計算機） -->
+              <!-- 貨幣同金額（直接喺 input 顯示算式） -->
               <div class="space-y-1">
                 <label class="text-xs font-bold text-gray-400">貨幣同金額</label>
                 <div class="flex gap-3">
@@ -434,56 +430,43 @@
     </div>
 
     <!-- ==================================================== -->
-    <!-- 🧮 專屬粉色系自訂計算機鍵盤 (完美融入主體設計) -->
+    <!-- 🧮 專屬粉色自訂小鍵盤（無遮罩、直接貼底、清爽直接） -->
     <!-- ==================================================== -->
-    <div id="calc-bottom-sheet" class="hidden fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-200">
-      <div class="w-full max-w-sm bg-[#FAF5F5] text-[#3a2d30] rounded-t-[36px] p-5 pb-8 shadow-[0_-15px_30px_rgba(223,77,98,0.15)] flex flex-col space-y-3 animate-in slide-in-from-bottom duration-200 border-t-2 border-pink-100">
-        
-        <!-- Header: 即時算式預覽 & 結果 -->
-        <div class="flex items-center justify-between px-3 pt-1 pb-3 border-b border-pink-100/60 bg-white rounded-2xl p-3 shadow-sm">
-          <div class="flex flex-col text-left overflow-hidden mr-2">
-            <span id="calc-sheet-preview" class="text-[11px] font-bold text-pink-300 font-mono tracking-wider truncate">算式: 0</span>
-            <span id="calc-sheet-result" class="text-2xl font-black main-accent font-mono tracking-tight truncate">0</span>
-          </div>
-          <div class="flex gap-2 shrink-0">
-            <button id="btn-calc-clear" type="button" class="bg-gray-100 text-gray-500 font-bold px-3.5 py-2 rounded-xl text-xs hover:bg-gray-200 active:scale-95 transition-all">
-              AC
-            </button>
-            <button id="btn-calc-done" type="button" class="bg-accent text-white font-bold px-4 py-2 rounded-xl text-xs btn-shadow active:scale-95 transition-all">
-              完成 ✓
-            </button>
-          </div>
-        </div>
+    <div id="calc-bottom-sheet" class="hidden absolute bottom-0 left-0 right-0 z-50 bg-[#FAF5F5] text-[#3a2d30] rounded-t-[32px] p-4 pb-6 shadow-[0_-12px_28px_rgba(223,77,98,0.18)] border-t-2 border-pink-100">
+      
+      <!-- 控制列：AC 與 完成 -->
+      <div class="flex items-center justify-end gap-2 pb-2.5 mb-1 border-b border-pink-100/60">
+        <button id="btn-calc-clear" type="button" class="bg-white text-gray-400 hover:text-gray-600 font-bold px-4 py-1.5 rounded-full text-xs border border-pink-100 shadow-sm active:scale-95 transition-all">
+          AC
+        </button>
+        <button id="btn-calc-done" type="button" class="bg-accent text-white font-bold px-5 py-1.5 rounded-full text-xs btn-shadow active:scale-95 transition-all">
+          完成 ✓
+        </button>
+      </div>
 
-        <!-- 4x4 暖色圓角計算機鍵盤 -->
-        <div class="grid grid-cols-4 gap-2 text-center font-bold text-xl select-none pt-1">
-          <!-- Row 1 -->
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="7">7</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="8">8</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="9">9</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-accent-light text-accent font-black text-lg border border-pink-200/50" data-key="+">＋</button>
+      <!-- 4x4 簡約數字鍵盤 -->
+      <div class="grid grid-cols-4 gap-1.5 text-center font-bold text-xl select-none">
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="7">7</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="8">8</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="9">9</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-accent-light text-accent font-black text-lg border border-pink-200/50" data-key="+">＋</button>
 
-          <!-- Row 2 -->
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="4">4</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="5">5</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="6">6</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-accent-light text-accent font-black text-lg border border-pink-200/50" data-key="-">－</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="4">4</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="5">5</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="6">6</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-accent-light text-accent font-black text-lg border border-pink-200/50" data-key="-">－</button>
 
-          <!-- Row 3 -->
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="1">1</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="2">2</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="3">3</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-accent-light text-accent font-black text-lg border border-pink-200/50" data-key="*">✕</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="1">1</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="2">2</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="3">3</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-accent-light text-accent font-black text-lg border border-pink-200/50" data-key="*">✕</button>
 
-          <!-- Row 4 -->
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 font-black text-gray-700" data-key=".">.</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="0">0</button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-white shadow-sm border border-pink-100/40 flex items-center justify-center text-gray-400" data-key="BACKSPACE">
-            <i class="fas fa-delete-left text-base"></i>
-          </button>
-          <button type="button" class="calc-key py-3.5 rounded-2xl bg-accent-light text-accent font-black text-lg border border-pink-200/50" data-key="/">÷</button>
-        </div>
-
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 font-black text-gray-700" data-key=".">.</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 text-gray-700" data-key="0">0</button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-white shadow-sm border border-pink-100/40 flex items-center justify-center text-gray-400" data-key="BACKSPACE">
+          <i class="fas fa-delete-left text-base"></i>
+        </button>
+        <button type="button" class="calc-key py-3 rounded-2xl bg-accent-light text-accent font-black text-lg border border-pink-200/50" data-key="/">÷</button>
       </div>
     </div>
 
@@ -693,7 +676,7 @@
     let editSelectedParticipants = [];
 
     // ------------------------------------------------------------------
-    // 🧮 自訂計算機引擎與彈窗邏輯（粉色主體）
+    // 🧮 自訂計算機引擎與直接寫入邏輯
     // ------------------------------------------------------------------
     let calcCurrentExpression = "";
     let activeCalcTargetInput = null;
@@ -711,31 +694,25 @@
       }
     };
 
-    const updateCalcSheetUI = () => {
-      const previewEl = document.getElementById('calc-sheet-preview');
-      const resultEl = document.getElementById('calc-sheet-result');
-      
-      const displayExpr = calcCurrentExpression
-        .replace(/\*/g, '✕')
-        .replace(/\//g, '÷')
-        .replace(/\+/g, '＋')
-        .replace(/-/g, '－');
-
-      previewEl.textContent = calcCurrentExpression ? displayExpr : "算式: 0";
-      const evaluated = safeEval(calcCurrentExpression);
-      resultEl.textContent = evaluated || (calcCurrentExpression ? "0" : "0");
+    const updateCalcTargetInput = () => {
+      if (activeCalcTargetInput) {
+        activeCalcTargetInput.value = calcCurrentExpression;
+      }
     };
 
     const openCalculatorSheet = (targetInput) => {
+      if (activeCalcTargetInput === targetInput && !document.getElementById('calc-bottom-sheet').classList.contains('hidden')) {
+        return;
+      }
       activeCalcTargetInput = targetInput;
       const initialVal = targetInput.value ? String(targetInput.value).trim() : "";
       calcCurrentExpression = initialVal;
-      updateCalcSheetUI();
+      updateCalcTargetInput();
       document.getElementById('calc-bottom-sheet').classList.remove('hidden');
     };
 
-    const closeCalculatorSheet = (applyResult = false) => {
-      if (applyResult && activeCalcTargetInput) {
+    const closeCalculatorSheet = () => {
+      if (activeCalcTargetInput) {
         const finalVal = safeEval(calcCurrentExpression);
         activeCalcTargetInput.value = finalVal > 0 ? finalVal : (calcCurrentExpression || '');
         
@@ -749,6 +726,7 @@
 
     document.querySelectorAll('.calc-key').forEach(btn => {
       btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const key = e.currentTarget.getAttribute('data-key');
         
         if (key === 'BACKSPACE') {
@@ -770,34 +748,43 @@
         } else {
           calcCurrentExpression += key;
         }
-        updateCalcSheetUI();
+        updateCalcTargetInput();
       });
     });
 
-    document.getElementById('btn-calc-clear').addEventListener('click', () => {
+    document.getElementById('btn-calc-clear').addEventListener('click', (e) => {
+      e.stopPropagation();
       calcCurrentExpression = "";
-      updateCalcSheetUI();
+      updateCalcTargetInput();
     });
 
-    document.getElementById('btn-calc-done').addEventListener('click', () => {
-      closeCalculatorSheet(true);
+    document.getElementById('btn-calc-done').addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeCalculatorSheet();
     });
 
-    document.getElementById('calc-bottom-sheet').addEventListener('click', (e) => {
-      if (e.target.id === 'calc-bottom-sheet') {
-        closeCalculatorSheet(true);
-      }
-    });
-
-    // 點擊彈起計算機
+    // 點擊輸入框打開小鍵盤
     document.getElementById('mark-amount').addEventListener('click', (e) => {
+      e.stopPropagation();
       openCalculatorSheet(e.target);
     });
     document.getElementById('edit-amount').addEventListener('click', (e) => {
+      e.stopPropagation();
       openCalculatorSheet(e.target);
     });
     document.getElementById('calc-input-amount').addEventListener('click', (e) => {
+      e.stopPropagation();
       openCalculatorSheet(e.target);
+    });
+
+    // 點擊小鍵盤以外地方自動收起並計好數
+    document.addEventListener('click', (e) => {
+      const calcSheet = document.getElementById('calc-bottom-sheet');
+      if (!calcSheet.classList.contains('hidden')) {
+        if (!calcSheet.contains(e.target) && e.target !== activeCalcTargetInput) {
+          closeCalculatorSheet();
+        }
+      }
     });
 
     try {
@@ -1272,7 +1259,7 @@
         repayListContainer.innerHTML = `
           <div class="text-center py-4 space-y-2">
             <p class="text-base font-bold text-white">全部清晒！可以繼續玩。 🎉</p>
-            <p class="text-xs opacity-75 text-white">啲數清清楚楚，完全冇人爭錢！</p>
+            <p class="text-xs opacity-75 text-white">啲數清清楚楚，完全唔爭錢！</p>
           </div>
         `;
       } else {
@@ -2151,7 +2138,8 @@
     document.getElementById('btn-submit-mark').addEventListener('click', (e) => {
       e.preventDefault();
       const currency = document.getElementById('mark-currency').value;
-      const amountVal = parseFloat(document.getElementById('mark-amount').value);
+      const rawVal = document.getElementById('mark-amount').value;
+      const amountVal = safeEval(rawVal);
       const itemName = document.getElementById('mark-item-name').value.trim();
 
       if (roomData.members.length === 0) {
@@ -2211,7 +2199,8 @@
       if (!activeEditingId) return;
 
       const currency = document.getElementById('edit-currency').value;
-      const amountVal = parseFloat(document.getElementById('edit-amount').value);
+      const rawVal = document.getElementById('edit-amount').value;
+      const amountVal = safeEval(rawVal);
       const itemName = document.getElementById('edit-item-name').value.trim();
 
       if (isNaN(amountVal) || amountVal <= 0) {
