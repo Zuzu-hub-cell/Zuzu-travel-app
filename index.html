@@ -1556,15 +1556,20 @@
     // TAB 5: 匯率 Render
     const renderRatesPage = () => {
       const calcSelect = document.getElementById('calc-input-currency');
+      const currentSelected = calcSelect.value; // 保留用家原本揀咗嘅貨幣
       calcSelect.innerHTML = '';
       Object.keys(SUPPORTED_CURRENCIES).forEach(curr => {
-        if (curr !== 'HKD') {
-          const option = document.createElement('option');
-          option.value = curr;
-          option.textContent = SUPPORTED_CURRENCIES[curr].name;
-          calcSelect.appendChild(option);
-        }
+        const option = document.createElement('option');
+        option.value = curr;
+        option.textContent = SUPPORTED_CURRENCIES[curr].name;
+        calcSelect.appendChild(option);
       });
+
+      if (currentSelected && SUPPORTED_CURRENCIES[currentSelected]) {
+        calcSelect.value = currentSelected;
+      } else {
+        calcSelect.value = 'HKD';
+      }
 
       const container = document.getElementById('rates-editor-container');
       container.innerHTML = '';
