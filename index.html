@@ -23,6 +23,7 @@
       color: #3a2d30;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior: none; 
+      transition: background-color 0.3s ease;
     }
     main {
       -webkit-overflow-scrolling: touch;
@@ -45,11 +46,9 @@
     .border-accent-light {
       border-color: #ffd4da;
     }
-    /* Smooth transition for pages */
     .page-transition {
       transition: all 0.25s ease-in-out;
     }
-    /* Hide scrollbars but keep functionality */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -57,7 +56,6 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    /* Custom shadow matching image templates */
     .soft-shadow {
       box-shadow: 0 10px 25px -5px rgba(223, 77, 98, 0.08), 0 8px 10px -6px rgba(223, 77, 98, 0.05);
     }
@@ -65,7 +63,6 @@
       box-shadow: 0 10px 20px -5px rgba(223, 77, 98, 0.3);
     }
     
-    /* 計算機按鍵反饋 */
     .calc-key {
       transition: all 0.1s ease;
     }
@@ -73,6 +70,83 @@
       transform: scale(0.94);
       background-color: #FFF0F2 !important;
       color: #df4d62 !important;
+    }
+
+    /* ======================================================== */
+    /* 🌙 DARK THEME 全域暗色模式覆蓋樣式                       */
+    /* ======================================================== */
+    body.dark-mode {
+      background: linear-gradient(135deg, #181214 0%, #201518 100%) !important;
+      color: #ece1e3 !important;
+    }
+    body.dark-mode #app {
+      background-color: #171314 !important;
+      border-color: #38282c !important;
+      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7) !important;
+    }
+    body.dark-mode header,
+    body.dark-mode nav {
+      background-color: #1f181a !important;
+      border-color: #332428 !important;
+    }
+    body.dark-mode .bg-white {
+      background-color: #241c1f !important;
+      color: #ece1e3 !important;
+    }
+    body.dark-mode .bg-\[\#FAF5F5\] {
+      background-color: #1a1416 !important;
+    }
+    body.dark-mode .text-gray-700,
+    body.dark-mode .text-gray-800,
+    body.dark-mode .text-slate-800 {
+      color: #f3eaec !important;
+    }
+    body.dark-mode .text-slate-700 {
+      color: #f7eff0 !important;
+    }
+    body.dark-mode .text-gray-600 {
+      color: #d1c1c5 !important;
+    }
+    body.dark-mode .text-gray-500,
+    body.dark-mode .text-gray-400 {
+      color: #9e898f !important;
+    }
+    body.dark-mode .border-pink-100,
+    body.dark-mode .border-pink-100\/50,
+    body.dark-mode .border-pink-100\/40,
+    body.dark-mode .border-pink-100\/30,
+    body.dark-mode .border-pink-100\/20,
+    body.dark-mode .border-pink-50,
+    body.dark-mode .border-pink-50\/50,
+    body.dark-mode .divide-pink-100\/50 > :not([hidden]) ~ :not([hidden]) {
+      border-color: #3d2b30 !important;
+    }
+    body.dark-mode .bg-accent-light {
+      background-color: #3b1820 !important;
+      color: #ff7b90 !important;
+    }
+    body.dark-mode input,
+    body.dark-mode select {
+      background-color: #241c1f !important;
+      color: #f3eaec !important;
+      border-color: #3d2b30 !important;
+    }
+    body.dark-mode input::placeholder {
+      color: #7a6369 !important;
+    }
+    body.dark-mode #calc-bottom-sheet {
+      background-color: #1a1416 !important;
+      border-color: #3d2b30 !important;
+      box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.6) !important;
+    }
+    body.dark-mode #calc-bottom-sheet .calc-key {
+      background-color: #241c1f !important;
+      border-color: #3d2b30 !important;
+      color: #ece1e3 !important;
+    }
+    body.dark-mode #calc-bottom-sheet .calc-key:active {
+      background-color: #3b1820 !important;
+      color: #ff7b90 !important;
     }
   </style>
 </head>
@@ -93,7 +167,9 @@
     <!-- MAIN APP STRUCTURE -->
     <div class="flex-grow flex flex-col w-full h-full overflow-hidden">
 
-      <!-- 1. LANDING PAGE -->
+      <!-- ========================================== -->
+      <!-- 1. LANDING PAGE (主頁 / 登入房號) -->
+      <!-- ========================================== -->
       <div id="page-landing" class="hidden flex-grow flex flex-col justify-between p-8 pb-12 overflow-y-auto no-scrollbar">
         <div class="flex flex-col items-center mt-12">
           <div class="w-36 h-36 bg-accent rounded-full flex items-center justify-center text-white text-6xl shadow-xl mb-8 relative">
@@ -131,10 +207,12 @@
         </div>
       </div>
 
-      <!-- WORKSPACE AREA -->
+      <!-- ========================================== -->
+      <!-- WORKSPACE AREA (當進入房間後的頁面) -->
+      <!-- ========================================== -->
       <div id="workspace" class="hidden flex-grow flex flex-col justify-between h-full overflow-hidden">
         
-        <!-- TOP NAVBAR -->
+        <!-- TOP NAVBAR (加入日夜間主題切換掣) -->
         <header class="bg-white px-5 py-4 flex items-center justify-between border-b border-pink-100/30 shrink-0">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white text-lg shadow-sm">
@@ -142,15 +220,20 @@
             </div>
             <h2 id="header-title" class="text-xl font-bold main-accent">埋數</h2>
           </div>
-          <span class="bg-accent-light main-accent px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 border border-pink-200/50">
-            玩得開心 💖
-          </span>
+          <div class="flex items-center gap-2">
+            <button id="btn-toggle-theme" type="button" class="w-8 h-8 rounded-full bg-accent-light text-accent flex items-center justify-center hover:scale-105 active:scale-95 transition-all text-xs border border-pink-200/50" title="切換深淺模式">
+              <i id="theme-icon" class="fas fa-moon"></i>
+            </button>
+            <span class="bg-accent-light main-accent px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 border border-pink-200/50">
+              玩得開心 💖
+            </span>
+          </div>
         </header>
 
-        <!-- CONTAINER FOR VIEWS -->
+        <!-- CONTAINER FOR VIEWS (Only this scrolls) -->
         <main class="flex-grow h-0 px-2 py-4 space-y-5 overflow-y-auto no-scrollbar">
 
-          <!-- PAGE 1: 埋數 -->
+          <!-- PAGE 1: 埋數 (Settle Accounts) -->
           <div id="view-settle" class="tab-view space-y-5">
             <div class="bg-white rounded-3xl p-5 soft-shadow border border-pink-100/40 relative overflow-hidden">
               <p class="text-xs font-bold text-pink-300 tracking-wider mb-1">房間編號</p>
@@ -430,7 +513,7 @@
     </div>
 
     <!-- ==================================================== -->
-    <!-- 🧮 專屬粉色自訂小鍵盤（無遮罩、直接貼底、清爽直接） -->
+    <!-- 🧮 專屬自訂小鍵盤（無遮罩、直接貼底、清爽直接） -->
     <!-- ==================================================== -->
     <div id="calc-bottom-sheet" class="hidden absolute bottom-0 left-0 right-0 z-50 bg-[#FAF5F5] text-[#3a2d30] rounded-t-[32px] p-4 pb-6 shadow-[0_-12px_28px_rgba(223,77,98,0.18)] border-t-2 border-pink-100">
       
@@ -676,6 +759,36 @@
     let editSelectedParticipants = [];
 
     // ------------------------------------------------------------------
+    // 🌙 主題切換與記憶管理
+    // ------------------------------------------------------------------
+    let currentTheme = localStorage.getItem('zuzu_theme_mode') || 'light';
+
+    const applyTheme = (theme) => {
+      const icon = document.getElementById('theme-icon');
+      if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (icon) {
+          icon.className = 'fas fa-sun text-yellow-400';
+        }
+      } else {
+        document.body.classList.remove('dark-mode');
+        if (icon) {
+          icon.className = 'fas fa-moon text-accent';
+        }
+      }
+      localStorage.setItem('zuzu_theme_mode', theme);
+    };
+
+    // 初始化讀取主題
+    applyTheme(currentTheme);
+
+    document.getElementById('btn-toggle-theme').addEventListener('click', () => {
+      currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+      applyTheme(currentTheme);
+      showToast(currentTheme === 'dark' ? '已切換至深色模式 🌙' : '已切換至淺色模式 ☀️');
+    });
+
+    // ------------------------------------------------------------------
     // 🧮 自訂計算機引擎與直接寫入邏輯
     // ------------------------------------------------------------------
     let calcCurrentExpression = "";
@@ -777,7 +890,7 @@
       openCalculatorSheet(e.target);
     });
 
-    // 點擊小鍵盤以外地方自動收起並計好數
+    // 點擊外部自動收起小鍵盤
     document.addEventListener('click', (e) => {
       const calcSheet = document.getElementById('calc-bottom-sheet');
       if (!calcSheet.classList.contains('hidden')) {
