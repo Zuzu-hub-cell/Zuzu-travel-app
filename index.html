@@ -1566,6 +1566,12 @@
         }
       });
 
+      // 讀取上次記憶嘅外幣
+      const lastCurr = localStorage.getItem('last_used_currency');
+      if (lastCurr && lastCurr !== 'HKD' && SUPPORTED_CURRENCIES[lastCurr]) {
+        calcSelect.value = lastCurr;
+      }
+
       const container = document.getElementById('rates-editor-container');
       container.innerHTML = '';
 
@@ -2053,7 +2059,10 @@
     };
 
     document.getElementById('calc-input-amount').addEventListener('input', calculateExchange);
-    document.getElementById('calc-input-currency').addEventListener('change', calculateExchange);
+    document.getElementById('calc-input-currency').addEventListener('change', (e) => {
+      localStorage.setItem('last_used_currency', e.target.value); // 記住計算機當前揀嘅貨幣
+      calculateExchange();
+    });
 const fetchLiveRatesFromServer = async () => {
       showToast("正在從雲端抓取最新實時匯率...");
       try {
