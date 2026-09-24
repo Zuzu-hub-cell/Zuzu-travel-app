@@ -73,116 +73,146 @@
     }
 
     /* ======================================================== */
-    /* 🌙 專業極簡深炭黑模式（純黑灰白 + 柔和琥珀金重點）       */
+    /* 🌙 Dark Mode v2 — clearer hierarchy, accessible contrast */
     /* ======================================================== */
     body.dark-mode {
-      background: #101014 !important;
-      color: #f0f0f4 !important;
+      background: #0d0f14 !important;
+      color: #f5f7fa !important;
     }
     body.dark-mode #app {
-      background-color: #16161b !important;
-      border-color: #2e2e38 !important;
-      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.85) !important;
+      background-color: #12151b !important;
+      border-color: #292e38 !important;
+      box-shadow: 0 22px 70px -14px rgba(0,0,0,.9) !important;
+    }
+    body.dark-mode #splash-screen,
+    body.dark-mode .bg-\[\#FAF5F5\] {
+      background-color: #12151b !important;
     }
     body.dark-mode header,
     body.dark-mode nav {
-      background-color: #1a1a22 !important;
-      border-color: #2c2c38 !important;
+      background-color: #171a21 !important;
+      border-color: #2a303a !important;
     }
+
+    /* Surfaces: cards, nested panels and controls remain visibly separate. */
     body.dark-mode .bg-white {
-      background-color: #20202a !important;
-      color: #ffffff !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+      background-color: #1b1f27 !important;
+      color: #f5f7fa !important;
+      border-color: #303641 !important;
+      box-shadow: 0 6px 22px rgba(0,0,0,.28) !important;
     }
-    body.dark-mode .bg-\[\#FAF5F5\] {
-      background-color: #141418 !important;
-    }
-
-    /* 文字純淨高對比 */
-    body.dark-mode .text-gray-700,
-    body.dark-mode .text-gray-800,
-    body.dark-mode .text-slate-800,
-    body.dark-mode .text-slate-700,
-    body.dark-mode span.font-black,
-    body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
-      color: #ffffff !important;
-    }
-    body.dark-mode .text-gray-600,
-    body.dark-mode .text-gray-500,
-    body.dark-mode .text-gray-400 {
-      color: #9c9cae !important;
-    }
-
-    /* 取消所有紅/粉色，改用高級柔和暖金或純白灰重點 */
-    body.dark-mode .main-accent,
-    body.dark-mode .text-pink-400,
-    body.dark-mode .text-pink-300,
-    body.dark-mode .text-pink-500 {
-      color: #e5b869 !important; /* 柔和暖金色，保護雙眼又清晰 */
-    }
-    body.dark-mode .bg-accent {
-      background-color: #e5b869 !important;
-      color: #16161b !important;
-    }
-    body.dark-mode .bg-accent-light,
     body.dark-mode .bg-pink-50,
     body.dark-mode .bg-pink-50\/50,
     body.dark-mode .bg-pink-50\/40,
-    body.dark-mode .bg-pink-50\/20 {
-      background-color: #272522 !important;
-      color: #e5b869 !important;
+    body.dark-mode .bg-pink-50\/20,
+    body.dark-mode .bg-accent-light {
+      background-color: #24202a !important;
+      color: #f3a7b4 !important;
+    }
+    body.dark-mode .bg-yellow-50 { background-color: #29261d !important; }
+    body.dark-mode .bg-blue-50 { background-color: #1c2834 !important; }
+    body.dark-mode .bg-gray-50,
+    body.dark-mode .bg-gray-100 { background-color: #232832 !important; }
+
+    /* Text hierarchy */
+    body.dark-mode .text-gray-900,
+    body.dark-mode .text-gray-800,
+    body.dark-mode .text-gray-700,
+    body.dark-mode .text-slate-800,
+    body.dark-mode .text-slate-700,
+    body.dark-mode h1,
+    body.dark-mode h2,
+    body.dark-mode h3,
+    body.dark-mode h4 {
+      color: #f5f7fa !important;
+    }
+    body.dark-mode .text-gray-600,
+    body.dark-mode .text-gray-500 { color: #c2c8d0 !important; }
+    body.dark-mode .text-gray-400 { color: #9ba4b0 !important; }
+    body.dark-mode .text-gray-300 { color: #7f8997 !important; }
+
+    /* Keep Zuzu's pink identity in dark mode instead of switching brand colour. */
+    body.dark-mode .main-accent,
+    body.dark-mode .text-pink-300,
+    body.dark-mode .text-pink-400,
+    body.dark-mode .text-pink-500,
+    body.dark-mode .text-accent {
+      color: #ff8fa3 !important;
+    }
+    body.dark-mode .bg-accent {
+      background-color: #e85f76 !important;
+      color: #ffffff !important;
     }
 
-    /* 邊框線條乾淨炭灰 */
+    /* Borders/dividers */
+    body.dark-mode .border-pink-50,
+    body.dark-mode .border-pink-50\/50,
     body.dark-mode .border-pink-100,
     body.dark-mode .border-pink-100\/50,
     body.dark-mode .border-pink-100\/40,
     body.dark-mode .border-pink-100\/30,
     body.dark-mode .border-pink-100\/20,
-    body.dark-mode .border-pink-50,
-    body.dark-mode .border-pink-50\/50,
+    body.dark-mode .border-pink-200,
+    body.dark-mode .border-pink-200\/50,
     body.dark-mode .divide-pink-100\/50 > :not([hidden]) ~ :not([hidden]) {
-      border-color: #2c2c38 !important;
+      border-color: #343b47 !important;
     }
 
-    /* 表單元件輸入框高對比 */
+    /* Inputs */
     body.dark-mode input,
     body.dark-mode select {
-      background-color: #242430 !important;
-      color: #ffffff !important;
-      border-color: #363646 !important;
+      background-color: #222731 !important;
+      color: #f7f8fa !important;
+      border-color: #3a4350 !important;
     }
-    body.dark-mode input::placeholder {
-      color: #707084 !important;
+    body.dark-mode input::placeholder { color: #858f9d !important; }
+    body.dark-mode input:focus,
+    body.dark-mode select:focus {
+      border-color: #e85f76 !important;
+      box-shadow: 0 0 0 2px rgba(232,95,118,.2) !important;
     }
 
-    /* 小計算機深色模式 */
-    body.dark-mode #calc-bottom-sheet {
-      background-color: #16161c !important;
-      border-color: #2c2c38 !important;
-      box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.8) !important;
+    /* Preserve semantic colours with enough contrast. */
+    body.dark-mode .text-green-500,
+    body.dark-mode .text-green-600 { color: #72d6a0 !important; }
+    body.dark-mode .text-red-500,
+    body.dark-mode .text-red-600 { color: #ff858d !important; }
+    body.dark-mode .text-blue-500,
+    body.dark-mode .text-blue-600 { color: #75b9ff !important; }
+    body.dark-mode .text-yellow-400,
+    body.dark-mode .text-yellow-500 { color: #f4c96b !important; }
+    body.dark-mode .text-purple-400,
+    body.dark-mode .text-purple-500 { color: #bca5ff !important; }
+
+    /* Repayment hero stays visually distinct rather than becoming another card. */
+    body.dark-mode #view-settle .bg-gradient-to-br {
+      background-image: linear-gradient(135deg,#b94359,#7f293a) !important;
+      box-shadow: 0 12px 28px rgba(0,0,0,.32) !important;
     }
-    body.dark-mode #calc-bottom-sheet .calc-key {
-      background-color: #22222c !important;
-      border-color: #2e2e3c !important;
-      color: #ffffff !important;
+    body.dark-mode #view-settle .bg-gradient-to-br,
+    body.dark-mode #view-settle .bg-gradient-to-br * {
+      color: #ffffff;
+    }
+
+    /* Calculator */
+    body.dark-mode #calc-bottom-sheet {
+      background-color: #171a21 !important;
+      border-color: #303641 !important;
+      box-shadow: 0 -14px 34px rgba(0,0,0,.65) !important;
+    }
+    body.dark-mode #calc-bottom-sheet .calc-key,
+    body.dark-mode #btn-calc-clear {
+      background-color: #222731 !important;
+      border-color: #343b47 !important;
+      color: #f5f7fa !important;
     }
     body.dark-mode #calc-bottom-sheet .calc-key:active {
-      background-color: #2c2a26 !important;
-      color: #e5b869 !important;
-    }
-    body.dark-mode #calc-bottom-sheet .bg-accent-light {
-      background-color: #282522 !important;
-      color: #e5b869 !important;
-    }
-    body.dark-mode #btn-calc-clear {
-      background-color: #22222c !important;
-      border-color: #2e2e3c !important;
-      color: #a4a4b2 !important;
+      background-color: #30252b !important;
+      color: #ff9aad !important;
     }
     body.dark-mode #btn-calc-done {
-      background-color: #e5b869 !important;
-      color: #16161b !important;
+      background-color: #e85f76 !important;
+      color: #ffffff !important;
     }
   </style>
 </head>
