@@ -94,6 +94,33 @@
       padding-bottom: 8px;
       border-radius: 16px;
     }
+    .edit-inline-calculator {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #fce1e8;
+      border-radius: 18px;
+      background: #fff7f9;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.6);
+    }
+    .inline-calc-key {
+      min-height: 38px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #fce1e8;
+      font-weight: 900;
+      color: #3a2d30;
+    }
+    .inline-calc-key:active {
+      transform: scale(0.96);
+      background: #FFF0F2;
+      color: #df4d62;
+    }
+    #edit-expense-modal > div,
+    #edit-settlement-modal > div,
+    #edit-common-fund-modal > div {
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
 
     /* ======================================================== */
     /* 🌙 Dark Mode v2 — clearer hierarchy, accessible contrast */
@@ -1090,6 +1117,7 @@
     // ------------------------------------------------------------------
     let calcCurrentExpression = "";
     let activeCalcTargetInput = null;
+    let inlineCalcTargetInput = null;
 
     const safeEval = (expr) => {
       if (!expr) return 0;
@@ -1110,7 +1138,91 @@
       }
     };
 
+    const closeInlineCalculator = (finalize = true) => {
+      if (inlineCalcTargetInput && finalize) {
+        const finalVal = safeEval(calcCurrentExpression);
+        inlineCalcTargetInput.value = finalVal > 0 ? finalVal : (calcCurrentExpression || '');
+      }
+      document.querySelectorAll('.edit-inline-calculator').forEach(el => el.remove());
+      inlineCalcTargetInput = null;
+    };
+
+    const updateInlineCalcTargetInput = () => {
+      if (inlineCalcTargetInput) {
+        inlineCalcTargetInput.value = calcCurrentExpression;
+      }
+    };
+
+    const handleCalcKey = (key, updateTarget) => {
+      if (key === 'BACKSPACE') {
+        calcCurrentExpression = calcCurrentExpression.slice(0, -1);
+      } else if (['+', '-', '*', '/'].includes(key)) {
+        if (!calcCurrentExpression) return;
+        const lastChar = calcCurrentExpression.slice(-1);
+        if (['+', '-', '*', '/'].includes(lastChar)) {
+          calcCurrentExpression = calcCurrentExpression.slice(0, -1) + key;
+        } else {
+          calcCurrentExpression += key;
+        }
+      } else if (key === '.') {
+        const parts = calcCurrentExpression.split(/[+\-*/]/);
+        const currentNumberPart = parts[parts.length - 1];
+        if (!currentNumberPart.includes('.')) {
+          calcCurrentExpression += (currentNumberPart === '' ? '0.' : '.');
+        }
+      } else {
+        calcCurrentExpression += key;
+      }
+      updateTarget();
+    };
+
+    const openInlineCalculator = (targetInput) => {
+      closeCalculatorSheet();
+      if (inlineCalcTargetInput === targetInput) return;
+      closeInlineCalculator(false);
+      inlineCalcTargetInput = targetInput;
+      calcCurrentExpression = targetInput.value ? String(targetInput.value).trim() : "";
+      updateInlineCalcTargetInput();
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'edit-inline-calculator';
+      wrapper.innerHTML = `
+        <div class="flex justify-end gap-2 mb-2">
+          <button type="button" class="inline-calc-clear bg-white text-gray-400 font-bold px-4 py-1.5 rounded-full text-xs border border-pink-100">AC</button>
+          <button type="button" class="inline-calc-done bg-accent text-white font-bold px-5 py-1.5 rounded-full text-xs">完成 ✓</button>
+        </div>
+        <div class="grid grid-cols-4 gap-1.5 text-center text-lg">
+          ${['7','8','9','+','4','5','6','-','1','2','3','*','.','0','BACKSPACE','/'].map(key => `
+            <button type="button" class="inline-calc-key ${['+','-','*','/'].includes(key) ? 'text-accent bg-accent-light' : ''}" data-key="${key}">
+              ${key === 'BACKSPACE' ? '<i class="fas fa-delete-left text-sm"></i>' : key === '*' ? '×' : key === '/' ? '÷' : key}
+            </button>
+          `).join('')}
+        </div>
+      `;
+
+      const mountTarget = targetInput.closest('label') || targetInput.parentElement;
+      mountTarget.appendChild(wrapper);
+
+      wrapper.querySelectorAll('.inline-calc-key').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          handleCalcKey(e.currentTarget.getAttribute('data-key'), updateInlineCalcTargetInput);
+        });
+      });
+      wrapper.querySelector('.inline-calc-clear').addEventListener('click', (e) => {
+        e.stopPropagation();
+        calcCurrentExpression = "";
+        updateInlineCalcTargetInput();
+      });
+      wrapper.querySelector('.inline-calc-done').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeInlineCalculator(true);
+      });
+      setTimeout(() => wrapper.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 50);
+    };
+
     const openCalculatorSheet = (targetInput) => {
+      closeInlineCalculator(true);
       const calcSheet = document.getElementById('calc-bottom-sheet');
       if (activeCalcTargetInput === targetInput && !calcSheet.classList.contains('hidden')) {
         return;
@@ -1184,15 +1296,15 @@
     });
     document.getElementById('edit-amount').addEventListener('click', (e) => {
       e.stopPropagation();
-      openCalculatorSheet(e.target);
+      openInlineCalculator(e.target);
     });
     document.getElementById('edit-settlement-amount').addEventListener('click', (e) => {
       e.stopPropagation();
-      openCalculatorSheet(e.target);
+      openInlineCalculator(e.target);
     });
     document.getElementById('edit-common-fund-amount').addEventListener('click', (e) => {
       e.stopPropagation();
-      openCalculatorSheet(e.target);
+      openInlineCalculator(e.target);
     });
     document.getElementById('calc-input-amount').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1445,6 +1557,13 @@
       const balances = calculateCommonFundCurrencyBalances();
       if (balances.length === 0) return '0.00';
       return balances.map(([currency, amount]) => `${amount.toFixed(2)} ${currency}`).join(' / ');
+    };
+
+    const getCommonFundCurrencyBalance = (currency) => {
+      const targetCurrency = currency || 'HKD';
+      const balances = calculateCommonFundCurrencyBalances();
+      const found = balances.find(([curr]) => curr === targetCurrency);
+      return found ? found[1] : 0;
     };
 
     const calculateMemberSpentHkd = () => {
@@ -2859,6 +2978,7 @@
     };
 
     const closeEditSettlementModal = () => {
+      closeInlineCalculator(true);
       document.getElementById('edit-settlement-modal').classList.add('hidden');
       activeEditingSettlementId = null;
     };
@@ -2876,6 +2996,7 @@
     };
 
     const closeEditCommonFundModal = () => {
+      closeInlineCalculator(true);
       document.getElementById('edit-common-fund-modal').classList.add('hidden');
       activeEditingCommonFundId = null;
     };
@@ -2939,6 +3060,7 @@
     };
 
     const closeEditExpenseModal = () => {
+      closeInlineCalculator(true);
       document.getElementById('edit-expense-modal').classList.add('hidden');
       activeEditingId = null;
     };
@@ -3360,12 +3482,10 @@
         return;
       }
 
-      const rate = parseFloat(roomData.rates[currency]) || SUPPORTED_CURRENCIES[currency]?.defaultRate || 1;
-      const amountHkd = amountVal * rate;
       if (markSelectedPayer === COMMON_FUND_PAYER) {
-        const commonFundStats = calculateCommonFundStats();
-        if (amountHkd > commonFundStats.balanceHkd + 0.01) {
-          showToast(`公數袋餘額唔夠，依家得 HKD ${commonFundStats.balanceHkd.toFixed(2)}。`);
+        const availableFundAmount = getCommonFundCurrencyBalance(currency);
+        if (amountVal > availableFundAmount + 0.01) {
+          showToast(`公數袋餘額唔夠，依家得 ${availableFundAmount.toFixed(2)} ${currency}。`);
           return;
         }
       }
@@ -3436,14 +3556,14 @@
         return;
       }
 
-      const editRate = parseFloat(roomData.rates[currency]) || SUPPORTED_CURRENCIES[currency]?.defaultRate || 1;
-      const editAmountHkd = amountVal * editRate;
       if (editSelectedPayer === COMMON_FUND_PAYER) {
         const existingExpense = roomData.expenses.find(exp => exp.id === activeEditingId);
-        const existingFundAmountHkd = existingExpense?.payer === COMMON_FUND_PAYER ? getAmountHkd(existingExpense) : 0;
-        const availableFundHkd = calculateCommonFundStats().balanceHkd + existingFundAmountHkd;
-        if (editAmountHkd > availableFundHkd + 0.01) {
-          showToast(`公數袋餘額唔夠，依家可用 HKD ${availableFundHkd.toFixed(2)}。`);
+        const existingFundAmount = existingExpense?.payer === COMMON_FUND_PAYER && (existingExpense.currency || 'HKD') === currency
+          ? (parseFloat(existingExpense.amount) || 0)
+          : 0;
+        const availableFundAmount = getCommonFundCurrencyBalance(currency) + existingFundAmount;
+        if (amountVal > availableFundAmount + 0.01) {
+          showToast(`公數袋餘額唔夠，依家可用 ${availableFundAmount.toFixed(2)} ${currency}。`);
           return;
         }
       }
