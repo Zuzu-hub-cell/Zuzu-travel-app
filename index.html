@@ -404,7 +404,7 @@
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="bg-[#FAF5F5] p-3 rounded-2xl border border-pink-100/30">
-                  <p class="text-[10px] text-gray-400">總消費筆數</p>
+                  <p class="text-[10px] text-gray-400">總紀錄筆數</p>
                   <p id="stat-total-count" class="text-lg font-black text-gray-700">0 筆</p>
                 </div>
                 <div class="bg-[#FAF5F5] p-3 rounded-2xl border border-pink-100/30">
@@ -417,7 +417,8 @@
                 <table class="w-full text-xs text-left border-collapse min-w-[640px]">
                   <thead>
                     <tr class="bg-accent text-white font-bold">
-                      <th class="py-2.5 px-3 border border-pink-100/30 rounded-tl-xl">項目</th>
+                      <th class="py-2.5 px-2 border border-pink-100/30 rounded-tl-xl text-center">Day</th>
+                      <th class="py-2.5 px-3 border border-pink-100/30">項目</th>
                       <th class="py-2.5 px-2 border border-pink-100/30 text-center">原外幣</th>
                       <th class="py-2.5 px-2 border border-pink-100/30 text-center">匯率</th>
                       <th class="py-2.5 px-2 border border-pink-100/30 text-right">折合 HKD</th>
@@ -518,9 +519,15 @@
               </div>
 
               <!-- Item Description -->
-              <div class="space-y-1">
-                <label class="text-xs font-bold text-gray-400">消費名稱</label>
-                <input type="text" id="mark-item-name" placeholder="食咗咩？買咗咩？玩咗咩？" class="w-full py-3.5 px-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-2 focus:ring-accent/40 font-medium">
+              <div class="grid grid-cols-[5rem_1fr] gap-3">
+                <label class="space-y-1">
+                  <span class="text-xs font-bold text-gray-400">Day</span>
+                  <input type="number" min="1" step="1" id="mark-trip-day" placeholder="1" class="w-full py-3.5 px-3 rounded-2xl border border-pink-100 focus:outline-none focus:ring-2 focus:ring-accent/40 font-black text-center">
+                </label>
+                <label class="space-y-1">
+                  <span class="text-xs font-bold text-gray-400">消費名稱</span>
+                  <input type="text" id="mark-item-name" placeholder="食咗咩？買咗咩？玩咗咩？" class="w-full py-3.5 px-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-2 focus:ring-accent/40 font-medium">
+                </label>
               </div>
 
               <!-- Payer Section -->
@@ -572,6 +579,10 @@
                 <span class="text-[10px] font-bold text-gray-400">入袋金額</span>
                 <input id="common-fund-amount" type="text" readonly inputmode="decimal" placeholder="例如 500 / 200+300" class="w-full bg-[#FAF5F5] border border-pink-100 rounded-2xl px-4 py-3 text-sm font-black main-accent focus:outline-none focus:ring-2 focus:ring-accent/30 cursor-pointer">
               </label>
+              <label class="space-y-1 block">
+                <span class="text-[10px] font-bold text-gray-400">旅行日數</span>
+                <input id="common-fund-trip-day" type="number" min="1" step="1" placeholder="例如 2" class="w-full bg-[#FAF5F5] border border-pink-100 rounded-2xl px-4 py-3 text-sm font-black text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent/30">
+              </label>
               <button id="btn-submit-common-fund" type="button" class="w-full bg-sky-500 text-white py-3.5 px-5 rounded-2xl font-bold text-sm hover:bg-sky-600 transition-colors flex items-center justify-center gap-2 active:scale-95 duration-100">
                 <i class="fas fa-plus"></i> 入錢落公數袋
               </button>
@@ -604,6 +615,10 @@
                   <select id="settlement-currency" class="w-28 bg-[#FAF5F5] border border-pink-100 rounded-2xl px-3 py-3 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent/30"></select>
                 </label>
               </div>
+              <label class="space-y-1 block">
+                <span class="text-[10px] font-bold text-gray-400">旅行日數</span>
+                <input id="settlement-trip-day" type="number" min="1" step="1" placeholder="例如 2" class="w-full bg-[#FAF5F5] border border-pink-100 rounded-2xl px-4 py-3 text-sm font-black text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent/30">
+              </label>
               <button id="btn-submit-settlement" type="button" class="w-full bg-emerald-500 text-white py-3.5 px-5 rounded-2xl font-bold text-sm hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2 active:scale-95 duration-100">
                 <i class="fas fa-check"></i> 記低呢筆還款
               </button>
@@ -795,6 +810,11 @@
           <div>
             <label class="text-[10px] font-bold text-gray-400 block mb-1">消費名稱</label>
             <input type="text" id="edit-item-name" class="w-full py-2.5 px-3 rounded-xl border border-pink-100 font-medium text-sm focus:outline-none">
+          </div>
+
+          <div>
+            <label class="text-[10px] font-bold text-gray-400 block mb-1">旅行日數</label>
+            <input type="number" min="1" step="1" id="edit-trip-day" placeholder="例如 2" class="w-full py-2.5 px-3 rounded-xl border border-pink-100 font-black text-sm focus:outline-none">
           </div>
 
           <div>
@@ -1189,6 +1209,16 @@
       const amt = parseFloat(record.amount) || 0;
       const rate = parseFloat(record.rate || roomData.rates[record.currency]) || SUPPORTED_CURRENCIES[record.currency]?.defaultRate || 1;
       return amt * rate;
+    };
+
+    const normalizeTripDay = (value) => {
+      const day = parseInt(value, 10);
+      return Number.isInteger(day) && day > 0 ? day : null;
+    };
+
+    const getTripDayLabel = (record) => {
+      const day = normalizeTripDay(record?.tripDay);
+      return day ? `Day ${day}` : '-';
     };
 
     const calculateCommonFundStats = () => {
@@ -1716,7 +1746,7 @@
     const renderSummaryPage = () => {
       document.getElementById('summary-room-code').textContent = roomId;
 
-      const count = roomData.expenses.length;
+      const count = roomData.expenses.length + (roomData.settlements || []).length + (roomData.commonFundContributions || []).length;
       document.getElementById('stat-total-count').textContent = `${count} 筆`;
 
       const memberSpent = calculateMemberSpentHkd();
@@ -1731,7 +1761,7 @@
       tbody.innerHTML = '';
 
       const trHeaders = document.querySelector('thead tr');
-      while (trHeaders.children.length > 5) {
+      while (trHeaders.children.length > 6) {
         trHeaders.removeChild(trHeaders.lastChild);
       }
       roomData.members.forEach(m => {
@@ -1741,10 +1771,10 @@
         trHeaders.appendChild(th);
       });
 
-      if (roomData.expenses.length === 0) {
+      if (count === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="${5 + roomData.members.length}" class="py-10 text-center text-gray-400 italic">
+            <td colspan="${6 + roomData.members.length}" class="py-10 text-center text-gray-400 italic">
               仲未有任何消費紀錄喎，快啲去 Mark 數啦！
             </td>
           </tr>
@@ -1780,6 +1810,7 @@
 
         tr.className = 'hover:bg-pink-50/20 text-[11px]';
         tr.innerHTML = `
+          <td class="py-2.5 px-2 border border-pink-100/30 text-center font-black text-gray-500 whitespace-nowrap">${getTripDayLabel(exp)}</td>
           <td class="py-2.5 px-3 border border-pink-100/30 font-bold text-gray-800 break-all max-w-[120px]">${exp.itemName || '無名項目'}</td>
           <td class="py-2.5 px-2 border border-pink-100/30 text-center font-mono font-semibold">${originalAmtStr}</td>
           <td class="py-2.5 px-2 border border-pink-100/30 text-center font-mono">${exp.currency === 'HKD' ? '-' : rate.toFixed(4)}</td>
@@ -1790,9 +1821,67 @@
         tbody.appendChild(tr);
       });
 
+      (roomData.settlements || []).forEach(settlement => {
+        const tr = document.createElement('tr');
+        const amt = parseFloat(settlement.amount) || 0;
+        const amountHkd = parseFloat(settlement.amountHkd) || getAmountHkd(settlement);
+        const rate = parseFloat(settlement.rate || roomData.rates[settlement.currency]) || 1;
+
+        let memberCells = '';
+        roomData.members.forEach(m => {
+          if (m === settlement.from) {
+            memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] font-black text-emerald-600">+${amountHkd.toFixed(2)}</td>`;
+          } else if (m === settlement.to) {
+            memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] font-black text-rose-600">-${amountHkd.toFixed(2)}</td>`;
+          } else {
+            memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] text-gray-300">-</td>`;
+          }
+        });
+
+        tr.className = 'bg-emerald-50/60 hover:bg-emerald-50 text-[11px]';
+        tr.innerHTML = `
+          <td class="py-2.5 px-2 border border-emerald-100 text-center font-black text-emerald-700 whitespace-nowrap">${getTripDayLabel(settlement)}</td>
+          <td class="py-2.5 px-3 border border-emerald-100 font-black text-emerald-800 break-all max-w-[120px]">中途還款</td>
+          <td class="py-2.5 px-2 border border-emerald-100 text-center font-mono font-semibold">${amt.toFixed(2)} ${settlement.currency || 'HKD'}</td>
+          <td class="py-2.5 px-2 border border-emerald-100 text-center font-mono">${(settlement.currency || 'HKD') === 'HKD' ? '-' : rate.toFixed(4)}</td>
+          <td class="py-2.5 px-2 border border-emerald-100 text-right font-mono font-bold text-emerald-700">${amountHkd.toFixed(2)}</td>
+          <td class="py-2.5 px-2 border border-emerald-100 text-center font-bold text-emerald-700">${settlement.from} → ${settlement.to}</td>
+          ${memberCells}
+        `;
+        tbody.appendChild(tr);
+      });
+
+      (roomData.commonFundContributions || []).forEach(contribution => {
+        const tr = document.createElement('tr');
+        const amt = parseFloat(contribution.amount) || 0;
+        const amountHkd = parseFloat(contribution.amountHkd) || getAmountHkd(contribution);
+        const rate = parseFloat(contribution.rate || roomData.rates[contribution.currency]) || 1;
+
+        let memberCells = '';
+        roomData.members.forEach(m => {
+          if (m === contribution.contributor) {
+            memberCells += `<td class="py-2.5 px-2 border border-sky-100 text-center font-mono text-[11px] font-black text-sky-600">入袋 ${amountHkd.toFixed(2)}</td>`;
+          } else {
+            memberCells += `<td class="py-2.5 px-2 border border-sky-100 text-center font-mono text-[11px] text-gray-300">-</td>`;
+          }
+        });
+
+        tr.className = 'bg-sky-50/60 hover:bg-sky-50 text-[11px]';
+        tr.innerHTML = `
+          <td class="py-2.5 px-2 border border-sky-100 text-center font-black text-sky-700 whitespace-nowrap">${getTripDayLabel(contribution)}</td>
+          <td class="py-2.5 px-3 border border-sky-100 font-black text-sky-800 break-all max-w-[120px]">公數袋入錢</td>
+          <td class="py-2.5 px-2 border border-sky-100 text-center font-mono font-semibold">${amt.toFixed(2)} ${contribution.currency || 'HKD'}</td>
+          <td class="py-2.5 px-2 border border-sky-100 text-center font-mono">${(contribution.currency || 'HKD') === 'HKD' ? '-' : rate.toFixed(4)}</td>
+          <td class="py-2.5 px-2 border border-sky-100 text-right font-mono font-bold text-sky-700">${amountHkd.toFixed(2)}</td>
+          <td class="py-2.5 px-2 border border-sky-100 text-center font-bold text-sky-700">${contribution.contributor} → ${COMMON_FUND_LABEL}</td>
+          ${memberCells}
+        `;
+        tbody.appendChild(tr);
+      });
+
       const trTotal = document.getElementById('matrix-row-total');
       trTotal.innerHTML = `
-        <td colspan="5" class="py-2.5 px-3 text-right font-bold text-gray-500 border border-pink-100/30 bg-[#FAF5F5]/30">總共分得 (Total)</td>
+        <td colspan="6" class="py-2.5 px-3 text-right font-bold text-gray-500 border border-pink-100/30 bg-[#FAF5F5]/30">總共分得 (Total)</td>
       `;
       roomData.members.forEach(m => {
         const val = memberShares[m] || 0;
@@ -1801,7 +1890,7 @@
 
       const trPaid = document.getElementById('matrix-row-paid');
       trPaid.innerHTML = `
-        <td colspan="5" class="py-2.5 px-3 text-right font-bold text-gray-500 border border-pink-100/30 bg-[#FAF5F5]/40">總共畀咗 (Paid)</td>
+        <td colspan="6" class="py-2.5 px-3 text-right font-bold text-gray-500 border border-pink-100/30 bg-[#FAF5F5]/40">總共畀咗 (Paid)</td>
       `;
       roomData.members.forEach(m => {
         const val = memberSpent[m] || 0;
@@ -1810,7 +1899,7 @@
 
       const trNet = document.getElementById('matrix-row-net');
       trNet.innerHTML = `
-        <td colspan="5" class="py-2.5 px-3 text-right font-black text-gray-800 border border-pink-100/30">最後結餘 (Net)</td>
+        <td colspan="6" class="py-2.5 px-3 text-right font-black text-gray-800 border border-pink-100/30">最後結餘 (Net)</td>
       `;
       roomData.members.forEach(m => {
         const bal = memberBalances[m] || 0;
@@ -1998,6 +2087,7 @@
                     <i class="fas fa-hand-holding-dollar text-emerald-500"></i> 中途還款
                   </h4>
                   <div class="flex items-center gap-2 mt-1">
+                    <span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2.5 py-0.5 rounded-lg border border-emerald-200">${getTripDayLabel(record)}</span>
                     <span class="bg-white text-emerald-600 text-[10px] font-bold px-2.5 py-0.5 rounded-lg border border-emerald-100">${record.currency || 'HKD'}</span>
                     <span class="text-[10px] text-gray-400">${timeStr}</span>
                   </div>
@@ -2046,6 +2136,7 @@
                     <i class="fas fa-piggy-bank text-sky-500"></i> 公數袋入錢
                   </h4>
                   <div class="flex items-center gap-2 mt-1">
+                    <span class="bg-sky-100 text-sky-700 text-[10px] font-black px-2.5 py-0.5 rounded-lg border border-sky-200">${getTripDayLabel(record)}</span>
                     <span class="bg-white text-sky-600 text-[10px] font-bold px-2.5 py-0.5 rounded-lg border border-sky-100">${record.currency || 'HKD'}</span>
                     <span class="text-[10px] text-gray-400">${timeStr}</span>
                   </div>
@@ -2092,6 +2183,7 @@
               <div>
                 <h4 class="text-lg font-black text-slate-800 tracking-wide">${exp.itemName || '無名消費'}</h4>
                 <div class="flex items-center gap-2 mt-1">
+                  <span class="bg-accent-light text-accent text-[10px] font-black px-2.5 py-0.5 rounded-lg border border-pink-100/50">${getTripDayLabel(exp)}</span>
                   <span class="bg-accent-light text-accent text-[10px] font-bold px-2.5 py-0.5 rounded-lg border border-pink-100/50">${exp.currency}</span>
                   <span class="text-[10px] text-gray-400">${timeStr}</span>
                 </div>
@@ -2283,6 +2375,14 @@
         select.value = 'HKD';
       }
 
+      const lastTripDay = localStorage.getItem('last_used_trip_day') || '1';
+      const markTripDayInput = document.getElementById('mark-trip-day');
+      const commonFundTripDayInput = document.getElementById('common-fund-trip-day');
+      const settlementTripDayInput = document.getElementById('settlement-trip-day');
+      if (markTripDayInput && !markTripDayInput.value) markTripDayInput.value = lastTripDay;
+      if (commonFundTripDayInput && !commonFundTripDayInput.value) commonFundTripDayInput.value = lastTripDay;
+      if (settlementTripDayInput && !settlementTripDayInput.value) settlementTripDayInput.value = lastTripDay;
+
       renderMarkPayerButtons();
       renderMarkSplitButtons();
       renderCommonFundForm();
@@ -2390,6 +2490,7 @@
       const currencySel = document.getElementById('edit-currency');
       const amountInput = document.getElementById('edit-amount');
       const itemNameInput = document.getElementById('edit-item-name');
+      const tripDayInput = document.getElementById('edit-trip-day');
 
       currencySel.innerHTML = '';
       Object.keys(SUPPORTED_CURRENCIES).forEach(curr => {
@@ -2402,6 +2503,7 @@
 
       amountInput.value = exp.amount;
       itemNameInput.value = exp.itemName;
+      tripDayInput.value = normalizeTripDay(exp.tripDay) || '';
 
       editSelectedPayer = exp.payer;
       editSelectedParticipants = [...exp.participants];
@@ -2705,6 +2807,7 @@
       const currency = document.getElementById('settlement-currency').value || 'HKD';
       const rawVal = document.getElementById('settlement-amount').value;
       const amountVal = safeEval(rawVal);
+      const tripDay = normalizeTripDay(document.getElementById('settlement-trip-day')?.value);
 
       if (!from || !to) {
         showToast("揀返邊個畀、畀返邊個先啦！");
@@ -2730,6 +2833,7 @@
         amount: amountVal,
         rate,
         amountHkd: amountVal * rate,
+        tripDay,
         timestamp: new Date().toISOString()
       };
 
@@ -2739,6 +2843,7 @@
       });
 
       localStorage.setItem('last_used_settlement_currency', currency);
+      if (tripDay) localStorage.setItem('last_used_trip_day', String(tripDay));
       document.getElementById('settlement-amount').value = '';
       showToast("記低咗呢筆還款，餘額已更新！");
       switchTab('records');
@@ -2760,6 +2865,7 @@
       const currency = document.getElementById('common-fund-currency').value || 'HKD';
       const rawVal = document.getElementById('common-fund-amount').value;
       const amountVal = safeEval(rawVal);
+      const tripDay = normalizeTripDay(document.getElementById('common-fund-trip-day')?.value);
 
       if (!contributor) {
         showToast("揀返邊個入錢先啦！");
@@ -2779,6 +2885,7 @@
         amount: amountVal,
         rate,
         amountHkd: amountVal * rate,
+        tripDay,
         timestamp: new Date().toISOString()
       };
 
@@ -2788,6 +2895,7 @@
       });
 
       localStorage.setItem('last_used_common_fund_currency', currency);
+      if (tripDay) localStorage.setItem('last_used_trip_day', String(tripDay));
       document.getElementById('common-fund-amount').value = '';
       showToast("入咗公數袋喇！");
     });
@@ -2863,6 +2971,7 @@
       const rawVal = document.getElementById('mark-amount').value;
       const amountVal = safeEval(rawVal);
       const itemName = document.getElementById('mark-item-name').value.trim();
+      const tripDay = normalizeTripDay(document.getElementById('mark-trip-day')?.value);
 
       if (roomData.members.length === 0) {
         showToast("仲未加團友，Mark 唔到數住！");
@@ -2906,6 +3015,7 @@
         itemName: itemName,
         payer: markSelectedPayer,
         participants: [...markSelectedParticipants],
+        tripDay,
         timestamp: new Date().toISOString()
       };
 
@@ -2915,6 +3025,7 @@
         expenses: updatedExpenses
       });
       localStorage.setItem('last_used_currency', currency);
+      if (tripDay) localStorage.setItem('last_used_trip_day', String(tripDay));
       document.getElementById('mark-amount').value = '';
       document.getElementById('mark-item-name').value = '';
 
@@ -2934,6 +3045,7 @@
       const rawVal = document.getElementById('edit-amount').value;
       const amountVal = safeEval(rawVal);
       const itemName = document.getElementById('edit-item-name').value.trim();
+      const tripDay = normalizeTripDay(document.getElementById('edit-trip-day')?.value);
 
       if (isNaN(amountVal) || amountVal <= 0) {
         showToast("金額不合法！");
@@ -2975,7 +3087,8 @@
             amount: amountVal,
             itemName: itemName,
             payer: editSelectedPayer,
-            participants: [...editSelectedParticipants]
+            participants: [...editSelectedParticipants],
+            tripDay
           };
         }
         return exp;
