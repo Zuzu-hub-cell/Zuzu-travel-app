@@ -1323,6 +1323,15 @@
       return day ? `Day ${day}` : '-';
     };
 
+    const sortByTripDayThenTime = (records) => {
+      return [...records].sort((a, b) => {
+        const dayA = normalizeTripDay(a.tripDay) || 9999;
+        const dayB = normalizeTripDay(b.tripDay) || 9999;
+        if (dayA !== dayB) return dayA - dayB;
+        return new Date(a.timestamp || 0) - new Date(b.timestamp || 0);
+      });
+    };
+
     const calculateCommonFundStats = () => {
       const contributions = (roomData.commonFundContributions || [])
         .map(contribution => ({
@@ -1901,20 +1910,48 @@
         return;
       }
 
-      roomData.expenses.forEach(exp => {
-        const tr = document.createElement('tr');
-        const rate = parseFloat(roomData.rates[exp.currency]) || 1;
-        const amtVal = parseFloat(exp.amount) || 0;
-        const amtHkd = amtVal * rate;
+      const mainSummaryRecords = sortByTripDayThenTime([
+        ...roomData.expenses
+          .filter(exp => exp.payer !== COMMON_FUND_PAYER)
+          .map(exp => ({ type: 'expense', ...exp })),
+        ...(roomData.settlements || []).map(settlement => ({ type: 'settlement', ...settlement }))
+      ]);
 
-        let originalAmtStr = `${amtVal.toFixed(2)}`;
-        if (exp.currency !== 'HKD') {
-          originalAmtStr += ` ${exp.currency}`;
+      mainSummaryRecords.forEach(record => {
+        const tr = document.createElement('tr');
+
+        if (record.type === 'settlement') {
+          const amt = parseFloat(record.amount) || 0;
+          const currencyLabel = record.currency || 'HKD';
+
+          let memberCells = '';
+          roomData.members.forEach(m => {
+            if (m === record.from) {
+              memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] font-black text-emerald-600">已還 ${amt.toFixed(2)} ${currencyLabel}</td>`;
+            } else if (m === record.to) {
+              memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] font-black text-emerald-700">收到 ${amt.toFixed(2)} ${currencyLabel}</td>`;
+            } else {
+              memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] text-gray-300">-</td>`;
+            }
+          });
+
+          tr.className = 'bg-emerald-50/60 hover:bg-emerald-50 text-[11px]';
+          tr.innerHTML = `
+            <td class="py-2.5 px-2 border border-emerald-100 text-center font-black text-emerald-700 whitespace-nowrap">${getTripDayLabel(record)}</td>
+            <td class="py-2.5 px-3 border border-emerald-100 font-black text-emerald-800 break-all max-w-[120px]">中途還款</td>
+            <td class="py-2.5 px-2 border border-emerald-100 text-center font-mono font-semibold">${amt.toFixed(2)} ${currencyLabel}</td>
+            <td class="py-2.5 px-2 border border-emerald-100 text-center font-bold text-emerald-700">${record.from} → ${record.to}</td>
+            ${memberCells}
+          `;
+          tbody.appendChild(tr);
+          return;
         }
 
-        const splits = exp.participants || [];
+        const amtVal = parseFloat(record.amount) || 0;
+        const currencyLabel = record.currency || 'HKD';
+        const originalAmtStr = `${amtVal.toFixed(2)}${currencyLabel === 'HKD' ? '' : ` ${currencyLabel}`}`;
+        const splits = record.participants || [];
         const splitShareOriginal = splits.length > 0 ? (amtVal / splits.length) : 0;
-        const currencyLabel = exp.currency || 'HKD';
 
         let memberSplitCells = '';
         roomData.members.forEach(m => {
@@ -1927,54 +1964,36 @@
 
         tr.className = 'hover:bg-pink-50/20 text-[11px]';
         tr.innerHTML = `
-          <td class="py-2.5 px-2 border border-pink-100/30 text-center font-black text-gray-500 whitespace-nowrap">${getTripDayLabel(exp)}</td>
-          <td class="py-2.5 px-3 border border-pink-100/30 font-bold text-gray-800 break-all max-w-[120px]">${exp.itemName || '無名項目'}</td>
+          <td class="py-2.5 px-2 border border-pink-100/30 text-center font-black text-gray-500 whitespace-nowrap">${getTripDayLabel(record)}</td>
+          <td class="py-2.5 px-3 border border-pink-100/30 font-bold text-gray-800 break-all max-w-[120px]">${record.itemName || '無名項目'}</td>
           <td class="py-2.5 px-2 border border-pink-100/30 text-center font-mono font-semibold">${originalAmtStr}</td>
-          <td class="py-2.5 px-2 border border-pink-100/30 text-center font-bold text-accent">${exp.payer === COMMON_FUND_PAYER ? COMMON_FUND_LABEL : exp.payer}</td>
+          <td class="py-2.5 px-2 border border-pink-100/30 text-center font-bold text-accent">${record.payer}</td>
           ${memberSplitCells}
         `;
         tbody.appendChild(tr);
       });
 
-      (roomData.settlements || []).forEach(settlement => {
-        const tr = document.createElement('tr');
-        const amt = parseFloat(settlement.amount) || 0;
-        const currencyLabel = settlement.currency || 'HKD';
+      const commonFundActivities = sortByTripDayThenTime([
+        ...(roomData.commonFundContributions || []).map(contribution => ({ type: 'contribution', ...contribution })),
+        ...roomData.expenses
+          .filter(exp => exp.payer === COMMON_FUND_PAYER)
+          .map(exp => ({ type: 'fundExpense', ...exp }))
+      ]);
 
-        let memberCells = '';
-        roomData.members.forEach(m => {
-          if (m === settlement.from) {
-            memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] font-black text-emerald-600">已還 ${amt.toFixed(2)} ${currencyLabel}</td>`;
-          } else if (m === settlement.to) {
-            memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] font-black text-emerald-700">收到 ${amt.toFixed(2)} ${currencyLabel}</td>`;
-          } else {
-            memberCells += `<td class="py-2.5 px-2 border border-emerald-100 text-center font-mono text-[11px] text-gray-300">-</td>`;
-          }
-        });
-
-        tr.className = 'bg-emerald-50/60 hover:bg-emerald-50 text-[11px]';
-        tr.innerHTML = `
-          <td class="py-2.5 px-2 border border-emerald-100 text-center font-black text-emerald-700 whitespace-nowrap">${getTripDayLabel(settlement)}</td>
-          <td class="py-2.5 px-3 border border-emerald-100 font-black text-emerald-800 break-all max-w-[120px]">中途還款</td>
-          <td class="py-2.5 px-2 border border-emerald-100 text-center font-mono font-semibold">${amt.toFixed(2)} ${currencyLabel}</td>
-          <td class="py-2.5 px-2 border border-emerald-100 text-center font-bold text-emerald-700">${settlement.from} → ${settlement.to}</td>
-          ${memberCells}
-        `;
-        tbody.appendChild(tr);
-      });
-
-      if ((roomData.commonFundContributions || []).length > 0 && commonFundSection && commonFundList) {
+      if (commonFundActivities.length > 0 && commonFundSection && commonFundList) {
         commonFundSection.classList.remove('hidden');
       }
-      (roomData.commonFundContributions || []).forEach(contribution => {
-        const amt = parseFloat(contribution.amount) || 0;
-        const amountHkd = parseFloat(contribution.amountHkd) || getAmountHkd(contribution);
+      commonFundActivities.forEach(activity => {
+        const amt = parseFloat(activity.amount) || 0;
+        const amountHkd = parseFloat(activity.amountHkd) || getAmountHkd(activity);
         const row = document.createElement('div');
-        row.className = 'grid grid-cols-[4.5rem_1fr_auto] gap-3 px-4 py-2.5 text-[11px] items-center';
+        const isContribution = activity.type === 'contribution';
+        row.className = `grid grid-cols-[4.5rem_5rem_1fr_auto] gap-3 px-4 py-2.5 text-[11px] items-center ${isContribution ? 'text-sky-800' : 'text-rose-700 bg-rose-50/40'}`;
         row.innerHTML = `
-          <span class="font-black text-sky-700">${getTripDayLabel(contribution)}</span>
-          <span class="font-bold text-sky-800">${contribution.contributor} 入錢落 ${COMMON_FUND_LABEL}</span>
-          <span class="font-mono font-black text-sky-700">${amt.toFixed(2)} ${contribution.currency || 'HKD'} <span class="text-gray-400 font-bold">(HKD ${amountHkd.toFixed(2)})</span></span>
+          <span class="font-black">${getTripDayLabel(activity)}</span>
+          <span class="font-black">${isContribution ? '入數' : '支出'}</span>
+          <span class="font-bold">${isContribution ? `${activity.contributor} 入錢落 ${COMMON_FUND_LABEL}` : `用於：${activity.itemName || '無名項目'}`}</span>
+          <span class="font-mono font-black">${isContribution ? '+' : '-'}${amt.toFixed(2)} ${activity.currency || 'HKD'} <span class="text-gray-400 font-bold">(HKD ${amountHkd.toFixed(2)})</span></span>
         `;
         commonFundList.appendChild(row);
       });
