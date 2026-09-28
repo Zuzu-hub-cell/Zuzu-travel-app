@@ -455,8 +455,9 @@
           <div id="view-records" class="tab-view hidden space-y-5">
             <div class="space-y-2">
               <p class="text-xs font-bold text-gray-400 flex items-center gap-1">
-                <i class="fas fa-filter"></i> 跟邊個畀錢先嚟篩選：
+                <i class="fas fa-filter"></i> 紀錄篩選：
               </p>
+              <div id="records-filter-mode" class="grid grid-cols-2 gap-2 bg-[#FAF5F5] rounded-2xl p-1 border border-pink-100/50"></div>
               <div id="records-filter-slider" class="flex gap-2 overflow-x-auto no-scrollbar py-1"></div>
             </div>
             <div id="records-list-container" class="space-y-4"></div>
@@ -897,6 +898,7 @@
     let currentTab = 'settle';
     let localHistory = [];
     let recordFilterMember = 'all';
+    let recordFilterMode = 'related';
     let balanceViewMode = 'HKD';
     let unsubscribeRoom = null;
 
@@ -1653,6 +1655,8 @@
       const currencySelect = document.getElementById('settlement-currency');
       if (!fromSelect || !toSelect || !currencySelect) return;
 
+      const previousFrom = fromSelect.value;
+      const previousTo = toSelect.value;
       const memberOptions = roomData.members.map(member => `<option value="${member}">${member}</option>`).join('');
       fromSelect.innerHTML = memberOptions;
       toSelect.innerHTML = memberOptions;
@@ -1669,8 +1673,15 @@
       }
 
       const suggested = solutions[0];
-      if (suggested) {
+      if (roomData.members.includes(previousFrom)) {
+        fromSelect.value = previousFrom;
+      } else if (suggested) {
         fromSelect.value = suggested.from;
+      }
+
+      if (roomData.members.includes(previousTo)) {
+        toSelect.value = previousTo;
+      } else if (suggested) {
         toSelect.value = suggested.to;
       }
 
@@ -1890,8 +1901,22 @@
 
     // TAB 4: 消費記錄
     const renderRecordsPage = () => {
+      const modeContainer = document.getElementById('records-filter-mode');
       const slider = document.getElementById('records-filter-slider');
+      modeContainer.innerHTML = '';
       slider.innerHTML = '';
+
+      [
+        { mode: 'related', label: '相關團友' },
+        { mode: 'payer', label: '付款人' }
+      ].forEach(option => {
+        const btn = document.createElement('button');
+        btn.type = "button";
+        btn.className = `record-filter-mode-btn px-3 py-2 rounded-xl text-xs font-black transition-all ${recordFilterMode === option.mode ? 'bg-white text-accent soft-shadow' : 'text-gray-400 hover:text-gray-600'}`;
+        btn.textContent = option.label;
+        btn.setAttribute('data-mode', option.mode);
+        modeContainer.appendChild(btn);
+      });
 
       const allBtn = document.createElement('button');
       allBtn.type = "button";
@@ -1916,6 +1941,13 @@
         });
       });
 
+      document.querySelectorAll('.record-filter-mode-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          recordFilterMode = e.currentTarget.getAttribute('data-mode') || 'related';
+          renderRecordsPage();
+        });
+      });
+
       const recordsContainer = document.getElementById('records-list-container');
       recordsContainer.innerHTML = '';
 
@@ -1925,6 +1957,11 @@
       const filteredList = [...expenseRecords, ...settlementRecords, ...commonFundRecords]
         .filter(record => {
           if (recordFilterMember === 'all') return true;
+          if (recordFilterMode === 'payer') {
+            if (record.type === 'expense') return record.payer === recordFilterMember;
+            if (record.type === 'commonFundContribution') return record.contributor === recordFilterMember;
+            return record.from === recordFilterMember;
+          }
           if (record.type === 'expense') return record.payer === recordFilterMember || (record.participants || []).includes(recordFilterMember);
           if (record.type === 'settlement') return record.from === recordFilterMember || record.to === recordFilterMember;
           return record.contributor === recordFilterMember;
