@@ -1819,10 +1819,18 @@
       const balancePill = document.getElementById('common-fund-balance-pill');
       if (!contributorSelect || !currencySelect || !balancePill) return;
 
+      const previousContributor = contributorSelect.value;
       contributorSelect.innerHTML = roomData.members.map(member => `<option value="${member}">${member}</option>`).join('');
       currencySelect.innerHTML = Object.keys(SUPPORTED_CURRENCIES).map(curr => (
         `<option value="${curr}">${curr}</option>`
       )).join('');
+
+      const lastCommonFundContributor = localStorage.getItem('last_used_common_fund_contributor');
+      if (roomData.members.includes(previousContributor)) {
+        contributorSelect.value = previousContributor;
+      } else if (lastCommonFundContributor && roomData.members.includes(lastCommonFundContributor)) {
+        contributorSelect.value = lastCommonFundContributor;
+      }
 
       const lastCommonFundCurrency = localStorage.getItem('last_used_common_fund_currency');
       if (lastCommonFundCurrency && SUPPORTED_CURRENCIES[lastCommonFundCurrency]) {
@@ -3111,6 +3119,7 @@
       });
 
       localStorage.setItem('last_used_common_fund_currency', currency);
+      localStorage.setItem('last_used_common_fund_contributor', contributor);
       if (tripDay) localStorage.setItem('last_used_trip_day', String(tripDay));
       document.getElementById('common-fund-amount').value = '';
       showToast("入咗公數袋喇！");
@@ -3413,6 +3422,7 @@
         commonFundContributions: updatedContributions
       });
 
+      localStorage.setItem('last_used_common_fund_contributor', contributor);
       if (tripDay) localStorage.setItem('last_used_trip_day', String(tripDay));
       closeEditCommonFundModal();
       showToast("公數袋入錢修改成功！");
