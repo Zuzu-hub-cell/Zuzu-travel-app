@@ -97,6 +97,7 @@
     .edit-inline-calculator {
       margin-top: 10px;
       padding: 10px;
+      width: 100%;
       border: 1px solid #fce1e8;
       border-radius: 18px;
       background: #fff7f9;
@@ -1200,8 +1201,13 @@
         </div>
       `;
 
-      const mountTarget = targetInput.closest('label') || targetInput.parentElement;
-      mountTarget.appendChild(wrapper);
+      const gridRow = targetInput.closest('.grid');
+      if (gridRow && targetInput.id.startsWith('edit-')) {
+        gridRow.insertAdjacentElement('afterend', wrapper);
+      } else {
+        const mountTarget = targetInput.closest('label') || targetInput.parentElement;
+        mountTarget.appendChild(wrapper);
+      }
 
       wrapper.querySelectorAll('.inline-calc-key').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -1461,13 +1467,13 @@
 
     const getAmountHkd = (record) => {
       const amt = parseFloat(record.amount) || 0;
-      const rate = parseFloat(record.rate || roomData.rates[record.currency]) || SUPPORTED_CURRENCIES[record.currency]?.defaultRate || 1;
+      const rate = getRecordRate(record);
       return amt * rate;
     };
 
     const getRecordRate = (record) => {
       const currency = record?.currency || 'HKD';
-      return parseFloat(record?.rate || roomData.rates[currency]) || SUPPORTED_CURRENCIES[currency]?.defaultRate || 1;
+      return parseFloat(roomData.rates[currency]) || parseFloat(record?.rate) || SUPPORTED_CURRENCIES[currency]?.defaultRate || 1;
     };
 
     const normalizeTripDay = (value) => {
@@ -1626,7 +1632,7 @@
       (roomData.settlements || []).forEach(settlement => {
         const from = settlement.from;
         const to = settlement.to;
-        const amountHkd = parseFloat(settlement.amountHkd) || 0;
+        const amountHkd = getAmountHkd(settlement);
         if (amountHkd <= 0) return;
         if (balances[from] !== undefined) balances[from] += amountHkd;
         if (balances[to] !== undefined) balances[to] -= amountHkd;
@@ -2110,7 +2116,7 @@
 
         if (record.type === 'settlement') {
           const amt = parseFloat(record.amount) || 0;
-          const amountHkd = parseFloat(record.amountHkd) || getAmountHkd(record);
+          const amountHkd = getAmountHkd(record);
           const currencyLabel = record.currency || 'HKD';
           const rate = getRecordRate(record);
 
@@ -2467,7 +2473,7 @@
         filteredList.forEach(record => {
           if (record.type === 'settlement') {
             const amt = parseFloat(record.amount) || 0;
-            const amountHkd = parseFloat(record.amountHkd) || 0;
+            const amountHkd = getAmountHkd(record);
 
             let timeStr = '';
             if (record.timestamp) {
