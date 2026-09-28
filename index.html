@@ -420,6 +420,7 @@
                       <th class="py-2.5 px-2 border border-pink-100/30 rounded-tl-xl text-center">Day</th>
                       <th class="py-2.5 px-3 border border-pink-100/30">項目</th>
                       <th class="py-2.5 px-2 border border-pink-100/30 text-center">原外幣</th>
+                      <th class="py-2.5 px-2 border border-pink-100/30 text-right">折合 HKD</th>
                       <th class="py-2.5 px-2 border border-pink-100/30 text-center">邊個畀先</th>
                     </tr>
                   </thead>
@@ -439,7 +440,20 @@
                   </h4>
                   <span class="text-[10px] font-bold text-sky-500">只記錄入袋資金，不當作消費分帳</span>
                 </div>
-                <div id="summary-common-fund-list" class="divide-y divide-sky-100"></div>
+                <div class="overflow-x-auto no-scrollbar">
+                  <table class="w-full text-xs text-left border-collapse min-w-[560px]">
+                    <thead>
+                      <tr class="bg-sky-100/70 text-sky-700 font-black">
+                        <th class="py-2.5 px-3 border border-sky-100 text-center">Day</th>
+                        <th class="py-2.5 px-3 border border-sky-100 text-center">類型</th>
+                        <th class="py-2.5 px-3 border border-sky-100">內容</th>
+                        <th class="py-2.5 px-3 border border-sky-100 text-right">原外幣</th>
+                        <th class="py-2.5 px-3 border border-sky-100 text-right">折合 HKD</th>
+                      </tr>
+                    </thead>
+                    <tbody id="summary-common-fund-list" class="divide-y divide-sky-100"></tbody>
+                  </table>
+                </div>
               </div>
 
               <div class="border-t border-pink-100 pt-4">
@@ -1886,7 +1900,7 @@
       }
 
       const trHeaders = document.querySelector('thead tr');
-      while (trHeaders.children.length > 4) {
+      while (trHeaders.children.length > 5) {
         trHeaders.removeChild(trHeaders.lastChild);
       }
       roomData.members.forEach(m => {
@@ -1899,7 +1913,7 @@
       if (count === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="${4 + roomData.members.length}" class="py-10 text-center text-gray-400 italic">
+            <td colspan="${5 + roomData.members.length}" class="py-10 text-center text-gray-400 italic">
               仲未有任何消費紀錄喎，快啲去 Mark 數啦！
             </td>
           </tr>
@@ -1922,6 +1936,7 @@
 
         if (record.type === 'settlement') {
           const amt = parseFloat(record.amount) || 0;
+          const amountHkd = parseFloat(record.amountHkd) || getAmountHkd(record);
           const currencyLabel = record.currency || 'HKD';
 
           let memberCells = '';
@@ -1940,6 +1955,7 @@
             <td class="py-2.5 px-2 border border-emerald-100 text-center font-black text-emerald-700 whitespace-nowrap">${getTripDayLabel(record)}</td>
             <td class="py-2.5 px-3 border border-emerald-100 font-black text-emerald-800 break-all max-w-[120px]">中途還款</td>
             <td class="py-2.5 px-2 border border-emerald-100 text-center font-mono font-semibold">${amt.toFixed(2)} ${currencyLabel}</td>
+            <td class="py-2.5 px-2 border border-emerald-100 text-right font-mono font-black text-emerald-700">${amountHkd.toFixed(2)}</td>
             <td class="py-2.5 px-2 border border-emerald-100 text-center font-bold text-emerald-700">${record.from} → ${record.to}</td>
             ${memberCells}
           `;
@@ -1948,6 +1964,7 @@
         }
 
         const amtVal = parseFloat(record.amount) || 0;
+        const amountHkd = getAmountHkd(record);
         const currencyLabel = record.currency || 'HKD';
         const originalAmtStr = `${amtVal.toFixed(2)}${currencyLabel === 'HKD' ? '' : ` ${currencyLabel}`}`;
         const splits = record.participants || [];
@@ -1967,6 +1984,7 @@
           <td class="py-2.5 px-2 border border-pink-100/30 text-center font-black text-gray-500 whitespace-nowrap">${getTripDayLabel(record)}</td>
           <td class="py-2.5 px-3 border border-pink-100/30 font-bold text-gray-800 break-all max-w-[120px]">${record.itemName || '無名項目'}</td>
           <td class="py-2.5 px-2 border border-pink-100/30 text-center font-mono font-semibold">${originalAmtStr}</td>
+          <td class="py-2.5 px-2 border border-pink-100/30 text-right font-mono font-black text-gray-800">${amountHkd.toFixed(2)}</td>
           <td class="py-2.5 px-2 border border-pink-100/30 text-center font-bold text-accent">${record.payer}</td>
           ${memberSplitCells}
         `;
@@ -1986,21 +2004,23 @@
       commonFundActivities.forEach(activity => {
         const amt = parseFloat(activity.amount) || 0;
         const amountHkd = parseFloat(activity.amountHkd) || getAmountHkd(activity);
-        const row = document.createElement('div');
+        const row = document.createElement('tr');
         const isContribution = activity.type === 'contribution';
-        row.className = `grid grid-cols-[4.5rem_5rem_1fr_auto] gap-3 px-4 py-2.5 text-[11px] items-center ${isContribution ? 'text-sky-800' : 'text-rose-700 bg-rose-50/40'}`;
+        const signedClass = isContribution ? 'text-sky-700' : 'text-rose-700';
+        row.className = `${isContribution ? 'text-sky-800' : 'text-rose-700 bg-rose-50/40'} text-[11px]`;
         row.innerHTML = `
-          <span class="font-black">${getTripDayLabel(activity)}</span>
-          <span class="font-black">${isContribution ? '入數' : '支出'}</span>
-          <span class="font-bold">${isContribution ? `${activity.contributor} 入錢落 ${COMMON_FUND_LABEL}` : `用於：${activity.itemName || '無名項目'}`}</span>
-          <span class="font-mono font-black">${isContribution ? '+' : '-'}${amt.toFixed(2)} ${activity.currency || 'HKD'} <span class="text-gray-400 font-bold">(HKD ${amountHkd.toFixed(2)})</span></span>
+          <td class="py-2.5 px-3 border border-sky-100 text-center font-black">${getTripDayLabel(activity)}</td>
+          <td class="py-2.5 px-3 border border-sky-100 text-center font-black">${isContribution ? '入數' : '支出'}</td>
+          <td class="py-2.5 px-3 border border-sky-100 font-bold">${isContribution ? `${activity.contributor} 入錢落 ${COMMON_FUND_LABEL}` : `用於：${activity.itemName || '無名項目'}`}</td>
+          <td class="py-2.5 px-3 border border-sky-100 text-right font-mono font-black ${signedClass}">${isContribution ? '+' : '-'}${amt.toFixed(2)} ${activity.currency || 'HKD'}</td>
+          <td class="py-2.5 px-3 border border-sky-100 text-right font-mono font-black ${signedClass}">${isContribution ? '+' : '-'}${amountHkd.toFixed(2)}</td>
         `;
         commonFundList.appendChild(row);
       });
 
       const trTotal = document.getElementById('matrix-row-total');
       trTotal.innerHTML = `
-        <td colspan="4" class="py-2.5 px-3 text-right font-bold text-gray-500 border border-pink-100/30 bg-[#FAF5F5]/30">總共分得 HKD (Total)</td>
+        <td colspan="5" class="py-2.5 px-3 text-right font-bold text-gray-500 border border-pink-100/30 bg-[#FAF5F5]/30">總共分得 HKD (Total)</td>
       `;
       roomData.members.forEach(m => {
         const val = memberShares[m] || 0;
@@ -2009,7 +2029,7 @@
 
       const trPaid = document.getElementById('matrix-row-paid');
       trPaid.innerHTML = `
-        <td colspan="4" class="py-2.5 px-3 text-right font-bold text-gray-500 border border-pink-100/30 bg-[#FAF5F5]/40">總共代付 HKD (Paid)</td>
+        <td colspan="5" class="py-2.5 px-3 text-right font-bold text-gray-500 border border-pink-100/30 bg-[#FAF5F5]/40">總共代付 HKD (Paid)</td>
       `;
       roomData.members.forEach(m => {
         const val = memberSpent[m] || 0;
@@ -2018,7 +2038,7 @@
 
       const trNet = document.getElementById('matrix-row-net');
       trNet.innerHTML = `
-        <td colspan="4" class="py-2.5 px-3 text-right font-black text-gray-800 border border-pink-100/30">最後結餘 HKD (Net)</td>
+        <td colspan="5" class="py-2.5 px-3 text-right font-black text-gray-800 border border-pink-100/30">最後結餘 HKD (Net)</td>
       `;
       roomData.members.forEach(m => {
         const bal = memberBalances[m] || 0;
