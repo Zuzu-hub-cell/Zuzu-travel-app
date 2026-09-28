@@ -460,6 +460,7 @@
               </p>
               <div id="records-filter-mode" class="grid grid-cols-2 gap-2 bg-[#FAF5F5] rounded-2xl p-1 border border-pink-100/50"></div>
               <div id="records-filter-slider" class="flex gap-2 overflow-x-auto no-scrollbar py-1"></div>
+              <div id="records-filter-day-slider" class="flex gap-2 overflow-x-auto no-scrollbar py-1"></div>
             </div>
             <div id="records-list-container" class="space-y-4"></div>
           </div>
@@ -919,6 +920,7 @@
     let localHistory = [];
     let recordFilterMember = 'all';
     let recordFilterMode = 'related';
+    let recordFilterDay = 'all';
     let balanceViewMode = 'HKD';
     let unsubscribeRoom = null;
 
@@ -1992,8 +1994,10 @@
     const renderRecordsPage = () => {
       const modeContainer = document.getElementById('records-filter-mode');
       const slider = document.getElementById('records-filter-slider');
+      const daySlider = document.getElementById('records-filter-day-slider');
       modeContainer.innerHTML = '';
       slider.innerHTML = '';
+      daySlider.innerHTML = '';
 
       [
         { mode: 'related', label: '相關團友' },
@@ -2037,6 +2041,40 @@
         });
       });
 
+      const allRecordsForDays = [
+        ...roomData.expenses,
+        ...(roomData.settlements || []),
+        ...(roomData.commonFundContributions || [])
+      ];
+      const availableDays = [...new Set(
+        allRecordsForDays
+          .map(record => normalizeTripDay(record.tripDay))
+          .filter(day => day !== null)
+      )].sort((a, b) => a - b);
+
+      const allDayBtn = document.createElement('button');
+      allDayBtn.type = "button";
+      allDayBtn.className = `day-filter-chip px-4 py-2 rounded-2xl text-xs font-bold border whitespace-nowrap transition-all ${recordFilterDay === 'all' ? 'border-accent bg-accent text-white font-black' : 'border-pink-100 bg-white text-gray-500 hover:bg-pink-50/50'}`;
+      allDayBtn.textContent = '全部日子';
+      allDayBtn.setAttribute('data-day', 'all');
+      daySlider.appendChild(allDayBtn);
+
+      availableDays.forEach(day => {
+        const btn = document.createElement('button');
+        btn.type = "button";
+        btn.className = `day-filter-chip px-4 py-2 rounded-2xl text-xs font-bold border whitespace-nowrap transition-all ${String(recordFilterDay) === String(day) ? 'border-accent bg-accent text-white font-black' : 'border-pink-100 bg-white text-gray-500 hover:bg-pink-50/50'}`;
+        btn.textContent = `Day ${day}`;
+        btn.setAttribute('data-day', String(day));
+        daySlider.appendChild(btn);
+      });
+
+      document.querySelectorAll('.day-filter-chip').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          recordFilterDay = e.currentTarget.getAttribute('data-day') || 'all';
+          renderRecordsPage();
+        });
+      });
+
       const recordsContainer = document.getElementById('records-list-container');
       recordsContainer.innerHTML = '';
 
@@ -2044,6 +2082,7 @@
       const settlementRecords = (roomData.settlements || []).map(settlement => ({ type: 'settlement', ...settlement }));
       const commonFundRecords = (roomData.commonFundContributions || []).map(contribution => ({ type: 'commonFundContribution', ...contribution }));
       const filteredList = [...expenseRecords, ...settlementRecords, ...commonFundRecords]
+        .filter(record => recordFilterDay === 'all' || String(normalizeTripDay(record.tripDay)) === String(recordFilterDay))
         .filter(record => {
           if (recordFilterMember === 'all') return true;
           if (recordFilterMode === 'payer') {
