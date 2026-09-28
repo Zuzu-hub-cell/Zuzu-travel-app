@@ -835,6 +835,90 @@
       </div>
     </div>
 
+    <!-- SETTLEMENT EDIT MODAL -->
+    <div id="edit-settlement-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
+      <div class="bg-white w-full max-w-md rounded-3xl p-6 soft-shadow flex flex-col space-y-4">
+        <div class="flex justify-between items-center border-b border-pink-50 pb-3">
+          <h3 class="text-lg font-bold text-emerald-600 flex items-center gap-2">
+            <i class="fas fa-hand-holding-dollar"></i> 修改中途還款
+          </h3>
+          <button id="btn-close-edit-settlement" type="button" class="text-gray-400 hover:text-gray-600 p-1">
+            <i class="fas fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <label>
+              <span class="text-[10px] font-bold text-gray-400 block mb-1">邊個畀返</span>
+              <select id="edit-settlement-from" class="w-full py-3 px-3 rounded-xl border border-pink-100 bg-white font-bold text-xs focus:outline-none"></select>
+            </label>
+            <label>
+              <span class="text-[10px] font-bold text-gray-400 block mb-1">畀返邊個</span>
+              <select id="edit-settlement-to" class="w-full py-3 px-3 rounded-xl border border-pink-100 bg-white font-bold text-xs focus:outline-none"></select>
+            </label>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <label class="col-span-1">
+              <span class="text-[10px] font-bold text-gray-400 block mb-1">貨幣</span>
+              <select id="edit-settlement-currency" class="w-full py-3 px-3 rounded-xl border border-pink-100 bg-white font-bold text-xs focus:outline-none"></select>
+            </label>
+            <label class="col-span-2">
+              <span class="text-[10px] font-bold text-gray-400 block mb-1">還款金額</span>
+              <input type="text" readonly id="edit-settlement-amount" class="cursor-pointer w-full py-2.5 px-3 rounded-xl border border-pink-100 font-bold text-base focus:outline-none bg-white">
+            </label>
+          </div>
+          <label>
+            <span class="text-[10px] font-bold text-gray-400 block mb-1">旅行日數</span>
+            <input type="number" min="1" step="1" id="edit-settlement-trip-day" placeholder="例如 2" class="w-full py-2.5 px-3 rounded-xl border border-pink-100 font-black text-sm focus:outline-none">
+          </label>
+        </div>
+
+        <div class="flex gap-3 pt-3 border-t border-pink-50">
+          <button id="btn-save-edit-settlement" type="button" class="flex-grow py-3 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition-colors">確認修改</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMON FUND EDIT MODAL -->
+    <div id="edit-common-fund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
+      <div class="bg-white w-full max-w-md rounded-3xl p-6 soft-shadow flex flex-col space-y-4">
+        <div class="flex justify-between items-center border-b border-pink-50 pb-3">
+          <h3 class="text-lg font-bold text-sky-600 flex items-center gap-2">
+            <i class="fas fa-piggy-bank"></i> 修改公數袋入錢
+          </h3>
+          <button id="btn-close-edit-common-fund" type="button" class="text-gray-400 hover:text-gray-600 p-1">
+            <i class="fas fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <label>
+            <span class="text-[10px] font-bold text-gray-400 block mb-1">邊個入錢</span>
+            <select id="edit-common-fund-contributor" class="w-full py-3 px-3 rounded-xl border border-pink-100 bg-white font-bold text-xs focus:outline-none"></select>
+          </label>
+          <div class="grid grid-cols-3 gap-3">
+            <label class="col-span-1">
+              <span class="text-[10px] font-bold text-gray-400 block mb-1">貨幣</span>
+              <select id="edit-common-fund-currency" class="w-full py-3 px-3 rounded-xl border border-pink-100 bg-white font-bold text-xs focus:outline-none"></select>
+            </label>
+            <label class="col-span-2">
+              <span class="text-[10px] font-bold text-gray-400 block mb-1">入袋金額</span>
+              <input type="text" readonly id="edit-common-fund-amount" class="cursor-pointer w-full py-2.5 px-3 rounded-xl border border-pink-100 font-bold text-base focus:outline-none bg-white">
+            </label>
+          </div>
+          <label>
+            <span class="text-[10px] font-bold text-gray-400 block mb-1">旅行日數</span>
+            <input type="number" min="1" step="1" id="edit-common-fund-trip-day" placeholder="例如 2" class="w-full py-2.5 px-3 rounded-xl border border-pink-100 font-black text-sm focus:outline-none">
+          </label>
+        </div>
+
+        <div class="flex gap-3 pt-3 border-t border-pink-50">
+          <button id="btn-save-edit-common-fund" type="button" class="flex-grow py-3 px-4 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm transition-colors">確認修改</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Firebase Integration Script -->
@@ -1051,6 +1135,14 @@
       openCalculatorSheet(e.target);
     });
     document.getElementById('edit-amount').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openCalculatorSheet(e.target);
+    });
+    document.getElementById('edit-settlement-amount').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openCalculatorSheet(e.target);
+    });
+    document.getElementById('edit-common-fund-amount').addEventListener('click', (e) => {
       e.stopPropagation();
       openCalculatorSheet(e.target);
     });
@@ -2144,9 +2236,14 @@
                   <span class="bg-white text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-100">${record.from} 畀返</span>
                   <span class="bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">${record.to}</span>
                 </div>
-                <button class="btn-delete-settlement w-9 h-9 bg-white hover:bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center transition-colors active:scale-95 duration-100" data-id="${record.id}" title="刪除還款紀錄">
-                  <i class="far fa-trash-can text-sm"></i>
-                </button>
+                <div class="flex gap-1.5">
+                  <button class="btn-edit-settlement w-9 h-9 bg-white hover:bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center transition-colors active:scale-95 duration-100" data-id="${record.id}" title="修改還款紀錄">
+                    <i class="fas fa-pencil text-sm"></i>
+                  </button>
+                  <button class="btn-delete-settlement w-9 h-9 bg-white hover:bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center transition-colors active:scale-95 duration-100" data-id="${record.id}" title="刪除還款紀錄">
+                    <i class="far fa-trash-can text-sm"></i>
+                  </button>
+                </div>
               </div>
             `;
             recordsContainer.appendChild(card);
@@ -2190,9 +2287,14 @@
 
               <div class="flex justify-between items-center gap-3">
                 <span class="bg-white text-sky-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-sky-100">${record.contributor} 入咗錢</span>
-                <button class="btn-delete-common-fund w-9 h-9 bg-white hover:bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center transition-colors active:scale-95 duration-100" data-id="${record.id}" title="刪除公數袋入錢">
-                  <i class="far fa-trash-can text-sm"></i>
-                </button>
+                <div class="flex gap-1.5">
+                  <button class="btn-edit-common-fund w-9 h-9 bg-white hover:bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center transition-colors active:scale-95 duration-100" data-id="${record.id}" title="修改公數袋入錢">
+                    <i class="fas fa-pencil text-sm"></i>
+                  </button>
+                  <button class="btn-delete-common-fund w-9 h-9 bg-white hover:bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center transition-colors active:scale-95 duration-100" data-id="${record.id}" title="刪除公數袋入錢">
+                    <i class="far fa-trash-can text-sm"></i>
+                  </button>
+                </div>
               </div>
             `;
             recordsContainer.appendChild(card);
@@ -2288,6 +2390,14 @@
           });
         });
 
+        document.querySelectorAll('.btn-edit-settlement').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const settlementId = e.currentTarget.getAttribute('data-id');
+            const settlementObj = (roomData.settlements || []).find(item => item.id === settlementId);
+            if (settlementObj) openEditSettlementModal(settlementObj);
+          });
+        });
+
         document.querySelectorAll('.btn-delete-settlement').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const settlementId = e.currentTarget.getAttribute('data-id');
@@ -2306,6 +2416,14 @@
                 }
               );
             }
+          });
+        });
+
+        document.querySelectorAll('.btn-edit-common-fund').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const contributionId = e.currentTarget.getAttribute('data-id');
+            const contributionObj = (roomData.commonFundContributions || []).find(item => item.id === contributionId);
+            if (contributionObj) openEditCommonFundModal(contributionObj);
           });
         });
 
@@ -2521,6 +2639,30 @@
     // 7. EDIT MODAL SPECIFIC RENDERING
     // ------------------------------------------------------------------
     let activeEditingId = null;
+    let activeEditingSettlementId = null;
+    let activeEditingCommonFundId = null;
+
+    const fillCurrencySelect = (select, selectedCurrency = 'HKD') => {
+      select.innerHTML = '';
+      Object.keys(SUPPORTED_CURRENCIES).forEach(curr => {
+        const opt = document.createElement('option');
+        opt.value = curr;
+        opt.textContent = SUPPORTED_CURRENCIES[curr].name;
+        select.appendChild(opt);
+      });
+      select.value = SUPPORTED_CURRENCIES[selectedCurrency] ? selectedCurrency : 'HKD';
+    };
+
+    const fillMemberSelect = (select, selectedMember = '') => {
+      select.innerHTML = '';
+      roomData.members.forEach(member => {
+        const opt = document.createElement('option');
+        opt.value = member;
+        opt.textContent = member;
+        select.appendChild(opt);
+      });
+      if (roomData.members.includes(selectedMember)) select.value = selectedMember;
+    };
 
     const openEditExpenseModal = (exp) => {
       activeEditingId = exp.id;
@@ -2551,6 +2693,41 @@
       renderEditSplitButtons();
 
       modal.classList.remove('hidden');
+    };
+
+    const openEditSettlementModal = (settlement) => {
+      activeEditingSettlementId = settlement.id;
+
+      const modal = document.getElementById('edit-settlement-modal');
+      fillMemberSelect(document.getElementById('edit-settlement-from'), settlement.from);
+      fillMemberSelect(document.getElementById('edit-settlement-to'), settlement.to);
+      fillCurrencySelect(document.getElementById('edit-settlement-currency'), settlement.currency || 'HKD');
+      document.getElementById('edit-settlement-amount').value = settlement.amount;
+      document.getElementById('edit-settlement-trip-day').value = normalizeTripDay(settlement.tripDay) || '';
+
+      modal.classList.remove('hidden');
+    };
+
+    const closeEditSettlementModal = () => {
+      document.getElementById('edit-settlement-modal').classList.add('hidden');
+      activeEditingSettlementId = null;
+    };
+
+    const openEditCommonFundModal = (contribution) => {
+      activeEditingCommonFundId = contribution.id;
+
+      const modal = document.getElementById('edit-common-fund-modal');
+      fillMemberSelect(document.getElementById('edit-common-fund-contributor'), contribution.contributor);
+      fillCurrencySelect(document.getElementById('edit-common-fund-currency'), contribution.currency || 'HKD');
+      document.getElementById('edit-common-fund-amount').value = contribution.amount;
+      document.getElementById('edit-common-fund-trip-day').value = normalizeTripDay(contribution.tripDay) || '';
+
+      modal.classList.remove('hidden');
+    };
+
+    const closeEditCommonFundModal = () => {
+      document.getElementById('edit-common-fund-modal').classList.add('hidden');
+      activeEditingCommonFundId = null;
     };
 
     const renderEditPayerButtons = () => {
@@ -3075,6 +3252,8 @@
     });
 
     document.getElementById('btn-close-edit').addEventListener('click', closeEditExpenseModal);
+    document.getElementById('btn-close-edit-settlement').addEventListener('click', closeEditSettlementModal);
+    document.getElementById('btn-close-edit-common-fund').addEventListener('click', closeEditCommonFundModal);
 
     document.getElementById('btn-save-edit').addEventListener('click', (e) => {
       e.preventDefault();
@@ -3140,6 +3319,103 @@
 
       closeEditExpenseModal();
       showToast("修改成功！");
+    });
+
+    document.getElementById('btn-save-edit-settlement').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!activeEditingSettlementId) return;
+
+      const from = document.getElementById('edit-settlement-from').value;
+      const to = document.getElementById('edit-settlement-to').value;
+      const currency = document.getElementById('edit-settlement-currency').value || 'HKD';
+      const amountVal = safeEval(document.getElementById('edit-settlement-amount').value);
+      const tripDay = normalizeTripDay(document.getElementById('edit-settlement-trip-day')?.value);
+
+      if (!from || !to) {
+        showToast("揀返邊個畀、畀返邊個先啦！");
+        return;
+      }
+
+      if (from === to) {
+        showToast("還款雙方唔可以係同一個人呀！");
+        return;
+      }
+
+      if (isNaN(amountVal) || amountVal <= 0) {
+        showToast("輸入有效還款金額先啦！");
+        return;
+      }
+
+      const rate = parseFloat(roomData.rates[currency]) || SUPPORTED_CURRENCIES[currency]?.defaultRate || 1;
+      const updatedSettlements = (roomData.settlements || []).map(settlement => {
+        if (settlement.id === activeEditingSettlementId) {
+          return {
+            ...settlement,
+            from,
+            to,
+            currency,
+            amount: amountVal,
+            rate,
+            amountHkd: amountVal * rate,
+            tripDay
+          };
+        }
+        return settlement;
+      });
+
+      updateRoomInDb({
+        ...roomData,
+        settlements: updatedSettlements
+      });
+
+      if (tripDay) localStorage.setItem('last_used_trip_day', String(tripDay));
+      closeEditSettlementModal();
+      showToast("還款紀錄修改成功！");
+    });
+
+    document.getElementById('btn-save-edit-common-fund').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!activeEditingCommonFundId) return;
+
+      const contributor = document.getElementById('edit-common-fund-contributor').value;
+      const currency = document.getElementById('edit-common-fund-currency').value || 'HKD';
+      const amountVal = safeEval(document.getElementById('edit-common-fund-amount').value);
+      const tripDay = normalizeTripDay(document.getElementById('edit-common-fund-trip-day')?.value);
+
+      if (!contributor) {
+        showToast("揀返邊個入錢先啦！");
+        return;
+      }
+
+      if (isNaN(amountVal) || amountVal <= 0) {
+        showToast("輸入有效入袋金額先啦！");
+        return;
+      }
+
+      const rate = parseFloat(roomData.rates[currency]) || SUPPORTED_CURRENCIES[currency]?.defaultRate || 1;
+      const updatedContributions = (roomData.commonFundContributions || []).map(contribution => {
+        if (contribution.id === activeEditingCommonFundId) {
+          return {
+            ...contribution,
+            contributor,
+            currency,
+            amount: amountVal,
+            rate,
+            amountHkd: amountVal * rate,
+            tripDay
+          };
+        }
+        return contribution;
+      });
+
+      updateRoomInDb({
+        ...roomData,
+        commonFundContributions: updatedContributions
+      });
+
+      if (tripDay) localStorage.setItem('last_used_trip_day', String(tripDay));
+      closeEditCommonFundModal();
+      showToast("公數袋入錢修改成功！");
     });
 
     // Generate Canvas image
