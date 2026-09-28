@@ -2023,8 +2023,36 @@
         tbody.appendChild(tr);
       });
 
+      const groupedCommonFundContributions = Object.values(
+        (roomData.commonFundContributions || []).reduce((groups, contribution) => {
+          const day = normalizeTripDay(contribution.tripDay) || 'none';
+          const currency = contribution.currency || 'HKD';
+          const key = `${day}-${currency}`;
+          if (!groups[key]) {
+            groups[key] = {
+              type: 'contributionGroup',
+              tripDay: normalizeTripDay(contribution.tripDay),
+              currency,
+              amount: 0,
+              contributors: [],
+              timestamp: contribution.timestamp
+            };
+          }
+          const amount = parseFloat(contribution.amount) || 0;
+          groups[key].amount += amount;
+          groups[key].contributors.push({
+            name: contribution.contributor || '未知',
+            amount
+          });
+          if (new Date(contribution.timestamp || 0) < new Date(groups[key].timestamp || 0)) {
+            groups[key].timestamp = contribution.timestamp;
+          }
+          return groups;
+        }, {})
+      );
+
       const commonFundActivities = sortByTripDayThenTime([
-        ...(roomData.commonFundContributions || []).map(contribution => ({ type: 'contribution', ...contribution })),
+        ...groupedCommonFundContributions,
         ...roomData.expenses
           .filter(exp => exp.payer === COMMON_FUND_PAYER)
           .map(exp => ({ type: 'fundExpense', ...exp }))
@@ -2036,17 +2064,23 @@
       commonFundActivities.forEach(activity => {
         const amt = parseFloat(activity.amount) || 0;
         const row = document.createElement('tr');
-        const isContribution = activity.type === 'contribution';
+        const isContribution = activity.type === 'contributionGroup';
         const signedClass = isContribution ? 'text-sky-700' : 'text-rose-700';
-        const detailText = isContribution
-          ? (activity.contributor || '未知')
-          : `用於：${activity.itemName || '無名項目'}`;
+        const contributors = activity.contributors || [];
+        const contributorNames = contributors.map(item => item.name).join(' / ');
+        const contributionAmounts = contributors.map(item => item.amount);
+        const sameContributionAmount = contributionAmounts.length > 1
+          && contributionAmounts.every(amount => Math.abs(amount - contributionAmounts[0]) < 0.005);
+        const detailText = isContribution ? contributorNames : `用於：${activity.itemName || '無名項目'}`;
+        const amountSuffix = isContribution && sameContributionAmount
+          ? ` <span class="text-[10px] font-bold ${signedClass}">(各 ${contributionAmounts[0].toFixed(2)})</span>`
+          : '';
         row.className = `${isContribution ? 'text-sky-800' : 'text-rose-700 bg-rose-50/40'} text-[11px]`;
         row.innerHTML = `
           <td class="py-2.5 px-2 border border-sky-100 text-center font-black whitespace-nowrap">${getTripDayLabel(activity)}</td>
           <td class="py-2.5 px-2 border border-sky-100 text-center font-black whitespace-nowrap">${isContribution ? '入數' : '支出'}</td>
           <td class="py-2.5 px-3 border border-sky-100 font-bold">${detailText}</td>
-          <td class="py-2.5 px-3 border border-sky-100 text-right font-mono font-black ${signedClass}">${isContribution ? '+' : '-'}${amt.toFixed(2)} ${activity.currency || 'HKD'}</td>
+          <td class="py-2.5 px-3 border border-sky-100 text-right font-mono font-black ${signedClass}">${isContribution ? '+' : '-'}${amt.toFixed(2)} ${activity.currency || 'HKD'}${amountSuffix}</td>
         `;
         commonFundList.appendChild(row);
       });
