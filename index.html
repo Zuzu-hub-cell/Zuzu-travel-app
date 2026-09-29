@@ -288,6 +288,12 @@
       background-color: #b99861 !important;
       color: #ffffff !important;
     }
+    body.dark-mode .btn-toggle-theme {
+      background-color: #38362f !important;
+      color: #f4c96b !important;
+      border-color: #5f513b !important;
+      box-shadow: 0 6px 18px rgba(0,0,0,.24) !important;
+    }
 
     .amount-expression-input {
       overflow-x: auto;
@@ -1105,12 +1111,12 @@
       if (theme === 'dark') {
         document.body.classList.add('dark-mode');
         document.querySelectorAll('.theme-icon').forEach(icon => {
-          icon.className = 'fas fa-sun text-amber-300';
+          icon.className = 'theme-icon fas fa-sun text-amber-300';
         });
       } else {
         document.body.classList.remove('dark-mode');
         document.querySelectorAll('.theme-icon').forEach(icon => {
-          icon.className = 'fas fa-moon text-accent';
+          icon.className = 'theme-icon fas fa-moon text-accent';
         });
       }
       localStorage.setItem('zuzu_theme_mode', theme);
